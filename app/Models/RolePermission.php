@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class RolePermission extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'role',
+        'permissions',
+    ];
+
+    protected $casts = [
+        'permissions' => 'array',
+    ];
+
+    public static function getPermissionsForRole(string $role): array
+    {
+        $record = static::where('role', $role)->first();
+
+        return $record?->permissions ?? [];
+    }
+}
