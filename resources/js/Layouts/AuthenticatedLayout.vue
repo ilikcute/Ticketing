@@ -52,7 +52,7 @@ onUnmounted(() => {
     >
         <!-- Background SVG Waves & Soft Glow Lines -->
         <svg
-            class="pointer-events-none fixed inset-0 z-0 h-full w-full"
+            class="pointer-events-none fixed inset-0 z-0 h-full w-full opacity-60 sm:opacity-100"
             viewBox="0 0 1600 900"
             preserveAspectRatio="none"
             aria-hidden="true"
@@ -108,42 +108,42 @@ onUnmounted(() => {
             "
         ></div>
 
-        <!-- Ergonomic Ambient Ornaments -->
+        <!-- Ambient Ornaments -->
         <div
-            class="pointer-events-none fixed left-8 top-16 z-0 h-64 w-64 rounded-full border border-sky-500/10 bg-sky-500/[0.02]"
+            class="pointer-events-none fixed left-8 top-16 z-0 h-64 w-64 rounded-full border border-sky-500/10 bg-sky-500/[0.02] hidden sm:block"
         ></div>
         <div
-            class="pointer-events-none fixed right-[12%] top-[36%] z-0 h-60 w-60 rounded-full border border-amber-400/10 bg-amber-400/[0.02]"
+            class="pointer-events-none fixed right-[12%] top-[36%] z-0 h-60 w-60 rounded-full border border-amber-400/10 bg-amber-400/[0.02] hidden sm:block"
         ></div>
         <div
-            class="pointer-events-none fixed left-0 top-0 z-0 h-[420px] w-[420px] rounded-full bg-blue-600/10 blur-3xl"
+            class="pointer-events-none fixed left-0 top-0 z-0 h-[300px] sm:h-[420px] w-[300px] sm:w-[420px] rounded-full bg-blue-600/10 blur-3xl"
         ></div>
         <div
-            class="pointer-events-none fixed right-0 bottom-0 z-0 h-[460px] w-[460px] rounded-full bg-indigo-600/10 blur-3xl"
+            class="pointer-events-none fixed right-0 bottom-0 z-0 h-[320px] sm:h-[460px] w-[320px] sm:w-[460px] rounded-full bg-indigo-600/10 blur-3xl"
         ></div>
 
-        <div class="relative z-10">
+        <div class="relative z-10 flex flex-col min-h-screen">
             <!-- Navigation (Full Width Clean Navbar) -->
-            <nav class="sticky top-0 z-50 border-b border-white/20 bg-[#0E7BDC]/85 backdrop-blur-xl">
-                <div class="w-full px-4 sm:px-6 lg:px-10">
-                    <div class="flex h-16 justify-between items-center">
-                        <div class="flex items-center space-x-8">
+            <nav class="sticky top-0 z-50 border-b border-white/20 bg-[#0E7BDC]/90 backdrop-blur-xl shadow-md">
+                <div class="w-full px-3 sm:px-6 lg:px-10">
+                    <div class="flex h-14 sm:h-16 justify-between items-center">
+                        <div class="flex items-center space-x-4 sm:space-x-8">
                             <!-- Brand / Logo Header -->
-                            <Link href="/" class="flex items-center gap-3 group">
+                            <Link href="/" class="flex items-center gap-2.5 group">
                                 <img
                                     src="/images/logo-indomaret-funrun.png"
                                     alt="Indomaret Fun Run 2026"
-                                    class="h-10 w-auto object-contain filter drop-shadow-md group-hover:scale-105 transition duration-300"
+                                    class="h-8 sm:h-10 w-auto object-contain filter drop-shadow-md group-hover:scale-105 transition duration-300"
                                 />
                             </Link>
 
-                            <!-- Dynamic Navigation Links Based on Permissions -->
-                            <div class="hidden space-x-1 sm:flex items-center">
+                            <!-- Dynamic Navigation Links Based on Permissions (Desktop) -->
+                            <div class="hidden lg:flex space-x-1 items-center">
                                 <Link
                                     v-if="hasPerm('access-dashboard')"
                                     :href="route('dashboard')"
                                     :class="[
-                                        'px-4 py-2 rounded-full text-xs font-extrabold uppercase tracking-wider transition flex items-center gap-2 font-heading',
+                                        'px-3.5 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider transition flex items-center gap-1.5 font-heading',
                                         route().current('dashboard')
                                             ? 'bg-white text-[#0B2A8A] shadow-lg font-black'
                                             : 'text-white/90 hover:text-white hover:bg-white/10'
@@ -157,7 +157,7 @@ onUnmounted(() => {
                                     v-if="hasPerm('access-loket')"
                                     href="/loket"
                                     :class="[
-                                        'px-4 py-2 rounded-full text-xs font-extrabold uppercase tracking-wider transition flex items-center gap-2 font-heading',
+                                        'px-3.5 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider transition flex items-center gap-1.5 font-heading',
                                         route().current('loket.*')
                                             ? 'bg-white text-[#0B2A8A] shadow-lg font-black'
                                             : 'text-white/90 hover:text-white hover:bg-white/10'
@@ -171,7 +171,7 @@ onUnmounted(() => {
                                     v-if="hasPerm('access-import')"
                                     href="/import"
                                     :class="[
-                                        'px-4 py-2 rounded-full text-xs font-extrabold uppercase tracking-wider transition flex items-center gap-2 font-heading',
+                                        'px-3.5 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider transition flex items-center gap-1.5 font-heading',
                                         route().current('import.*')
                                             ? 'bg-white text-[#0B2A8A] shadow-lg font-black'
                                             : 'text-white/90 hover:text-white hover:bg-white/10'
@@ -185,21 +185,21 @@ onUnmounted(() => {
                                     v-if="hasPerm('access-users')"
                                     href="/users"
                                     :class="[
-                                        'px-4 py-2 rounded-full text-xs font-extrabold uppercase tracking-wider transition flex items-center gap-2 font-heading',
+                                        'px-3.5 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider transition flex items-center gap-1.5 font-heading',
                                         route().current('users.*')
                                             ? 'bg-white text-[#0B2A8A] shadow-lg font-black'
                                             : 'text-white/90 hover:text-white hover:bg-white/10'
                                     ]"
                                 >
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                                    Manajemen User &amp; Role
+                                    Manajemen User
                                 </Link>
 
                                 <Link
                                     v-if="hasPerm('access-bib-check')"
                                     href="/bib-check"
                                     :class="[
-                                        'px-4 py-2 rounded-full text-xs font-extrabold uppercase tracking-wider transition flex items-center gap-2 font-heading',
+                                        'px-3.5 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider transition flex items-center gap-1.5 font-heading',
                                         route().current('bib-check.*')
                                             ? 'bg-white text-[#0B2A8A] shadow-lg font-black'
                                             : 'text-white/90 hover:text-white hover:bg-white/10'
@@ -211,8 +211,8 @@ onUnmounted(() => {
                             </div>
                         </div>
 
-                        <!-- User Controls -->
-                        <div class="hidden sm:flex sm:items-center sm:space-x-3">
+                        <!-- User Controls & Mobile Clock -->
+                        <div class="flex items-center space-x-2 sm:space-x-3">
                             <!-- Real-time Live WIB Clock -->
                             <div class="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 border border-white/25 text-white font-mono text-xs font-bold backdrop-blur-md shadow-sm">
                                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -220,19 +220,19 @@ onUnmounted(() => {
                             </div>
 
                             <!-- Role Pill Badge -->
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-white/20 text-white border border-white/30 backdrop-blur-md">
+                            <span class="inline-flex items-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-extrabold uppercase tracking-wider bg-white/20 text-white border border-white/30 backdrop-blur-md">
                                 {{ role }}
                             </span>
 
-                            <!-- User Profile Dropdown -->
-                            <div class="relative">
+                            <!-- User Profile Dropdown (Desktop/Tablet) -->
+                            <div class="hidden sm:block relative">
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
-                                        <button class="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-black/20 hover:bg-black/30 border border-white/20 text-white text-xs font-extrabold transition">
+                                        <button class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/20 hover:bg-black/30 border border-white/20 text-white text-xs font-extrabold transition">
                                             <div class="w-6 h-6 rounded-full bg-[#FFD400] text-[#0B2A8A] font-black flex items-center justify-center text-xs uppercase font-heading">
                                                 {{ user.name ? user.name.charAt(0) : 'U' }}
                                             </div>
-                                            <span>{{ user.name }}</span>
+                                            <span class="max-w-[100px] truncate">{{ user.name }}</span>
                                             <svg class="w-3.5 h-3.5 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
                                         </button>
                                     </template>
@@ -243,84 +243,139 @@ onUnmounted(() => {
                                     </template>
                                 </Dropdown>
                             </div>
-                        </div>
 
-                        <!-- Mobile Hamburger Button -->
-                        <div class="flex items-center sm:hidden">
-                            <button
-                                class="inline-flex items-center justify-center p-2 rounded-lg text-white hover:bg-white/10 focus:outline-none transition"
-                                @click="showingNavigationDropdown = !showingNavigationDropdown"
-                            >
-                                <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                                    <path
-                                        :class="{ hidden: showingNavigationDropdown, 'inline-flex': !showingNavigationDropdown }"
-                                        stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"
-                                    />
-                                    <path
-                                        :class="{ hidden: !showingNavigationDropdown, 'inline-flex': showingNavigationDropdown }"
-                                        stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"
-                                    />
-                                </svg>
-                            </button>
+                            <!-- Mobile Hamburger Button -->
+                            <div class="flex items-center lg:hidden">
+                                <button
+                                    class="inline-flex items-center justify-center p-2 rounded-xl text-white bg-white/10 hover:bg-white/20 border border-white/20 focus:outline-none transition active:scale-95"
+                                    @click="showingNavigationDropdown = !showingNavigationDropdown"
+                                    aria-label="Menu"
+                                >
+                                    <svg class="h-5 w-5" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                                        <path
+                                            :class="{ hidden: showingNavigationDropdown, 'inline-flex': !showingNavigationDropdown }"
+                                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"
+                                        />
+                                        <path
+                                            :class="{ hidden: !showingNavigationDropdown, 'inline-flex': showingNavigationDropdown }"
+                                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"
+                                        />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Mobile Navigation Menu -->
-                <div :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }" class="sm:hidden border-b border-white/20 bg-[#0E7BDC]">
-                    <div class="space-y-1 px-4 pt-2 pb-3">
-                        <Link v-if="hasPerm('access-dashboard')" :href="route('dashboard')" class="block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-white/10">Dashboard</Link>
-                        <Link v-if="hasPerm('access-loket')" href="/loket" class="block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-white/10">Loket Penukaran</Link>
-                        <Link v-if="hasPerm('access-import')" href="/import" class="block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-white/10">Import Peserta</Link>
-                        <Link v-if="hasPerm('access-users')" href="/users" class="block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-white/10">Manajemen User &amp; Role</Link>
-                        <Link v-if="hasPerm('access-bib-check')" href="/bib-check" class="block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-white/10">BIB Check Kiosk</Link>
+                <!-- Mobile Navigation Drawer -->
+                <div v-if="showingNavigationDropdown" class="lg:hidden border-b border-white/20 bg-[#0B34AA] shadow-2xl animate-fade-in">
+                    <div class="space-y-1.5 px-4 pt-3 pb-4">
+                        <Link
+                            v-if="hasPerm('access-dashboard')"
+                            :href="route('dashboard')"
+                            @click="showingNavigationDropdown = false"
+                            :class="[
+                                'block px-4 py-2.5 rounded-xl text-sm font-extrabold tracking-wide uppercase transition font-heading',
+                                route().current('dashboard') ? 'bg-white text-[#0B2A8A] shadow-md font-black' : 'text-white hover:bg-white/10'
+                            ]"
+                        >
+                            📊 Dashboard
+                        </Link>
+                        <Link
+                            v-if="hasPerm('access-loket')"
+                            href="/loket"
+                            @click="showingNavigationDropdown = false"
+                            :class="[
+                                'block px-4 py-2.5 rounded-xl text-sm font-extrabold tracking-wide uppercase transition font-heading',
+                                route().current('loket.*') ? 'bg-white text-[#0B2A8A] shadow-md font-black' : 'text-white hover:bg-white/10'
+                            ]"
+                        >
+                            🎽 Loket Penukaran POS
+                        </Link>
+                        <Link
+                            v-if="hasPerm('access-import')"
+                            href="/import"
+                            @click="showingNavigationDropdown = false"
+                            :class="[
+                                'block px-4 py-2.5 rounded-xl text-sm font-extrabold tracking-wide uppercase transition font-heading',
+                                route().current('import.*') ? 'bg-white text-[#0B2A8A] shadow-md font-black' : 'text-white hover:bg-white/10'
+                            ]"
+                        >
+                            📥 Import Data Peserta
+                        </Link>
+                        <Link
+                            v-if="hasPerm('access-users')"
+                            href="/users"
+                            @click="showingNavigationDropdown = false"
+                            :class="[
+                                'block px-4 py-2.5 rounded-xl text-sm font-extrabold tracking-wide uppercase transition font-heading',
+                                route().current('users.*') ? 'bg-white text-[#0B2A8A] shadow-md font-black' : 'text-white hover:bg-white/10'
+                            ]"
+                        >
+                            👥 Manajemen User &amp; Role
+                        </Link>
+                        <Link
+                            v-if="hasPerm('access-bib-check')"
+                            href="/bib-check"
+                            @click="showingNavigationDropdown = false"
+                            :class="[
+                                'block px-4 py-2.5 rounded-xl text-sm font-extrabold tracking-wide uppercase transition font-heading',
+                                route().current('bib-check.*') ? 'bg-white text-[#0B2A8A] shadow-md font-black' : 'text-white hover:bg-white/10'
+                            ]"
+                        >
+                            🔍 BIB Check Kiosk
+                        </Link>
                     </div>
 
-                    <div class="border-t border-white/20 pt-4 pb-3 px-4">
+                    <div class="border-t border-white/20 pt-3 pb-4 px-4 bg-black/20">
                         <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-full bg-[#FFD400] text-[#0B2A8A] font-black flex items-center justify-center uppercase font-heading">
+                            <div class="w-10 h-10 rounded-full bg-[#FFD400] text-[#0B2A8A] font-black flex items-center justify-center uppercase font-heading text-sm">
                                 {{ user.name ? user.name.charAt(0) : 'U' }}
                             </div>
-                            <div>
-                                <div class="text-sm font-bold text-white">{{ user.name }}</div>
-                                <div class="text-xs text-white/80">{{ user.email }}</div>
+                            <div class="min-w-0 flex-1">
+                                <div class="text-sm font-bold text-white truncate">{{ user.name }}</div>
+                                <div class="text-xs text-white/70 truncate">{{ user.email }}</div>
                             </div>
                         </div>
-                        <div class="mt-3 space-y-1">
-                            <Link :href="route('profile.edit')" class="block px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-white/10">Profile</Link>
-                            <Link :href="route('logout')" method="post" as="button" class="block w-full text-left px-3 py-2 rounded-md text-sm font-bold text-yellow-300 hover:bg-white/10">Log Out</Link>
+                        <div class="mt-3 grid grid-cols-2 gap-2">
+                            <Link :href="route('profile.edit')" class="text-center px-3 py-2 rounded-xl text-xs font-bold text-white bg-white/10 hover:bg-white/20 border border-white/20">
+                                ⚙️ Profile
+                            </Link>
+                            <Link :href="route('logout')" method="post" as="button" class="text-center px-3 py-2 rounded-xl text-xs font-black text-white bg-rose-600 hover:bg-rose-700 shadow-md">
+                                🚪 Log Out
+                            </Link>
                         </div>
                     </div>
                 </div>
             </nav>
 
-            <!-- Page Header (Full Width) -->
+            <!-- Page Header (Responsive) -->
             <header v-if="$slots.header" class="border-b border-white/20 bg-black/10 backdrop-blur-md">
-                <div class="w-full px-4 py-5 sm:px-6 lg:px-10">
+                <div class="w-full px-3 sm:px-6 lg:px-10 py-3 sm:py-4">
                     <slot name="header" />
                 </div>
             </header>
 
-            <!-- Main Content Area (Full Width) -->
-            <main class="w-full px-4 sm:px-6 lg:px-10 py-3 sm:py-4 min-h-[calc(100vh-140px)]">
+            <!-- Main Content Area (Mobile and Tablet Responsive) -->
+            <main class="w-full px-2.5 sm:px-6 lg:px-10 py-3 sm:py-4 flex-1">
                 <slot />
             </main>
 
-            <!-- Main Footer with Developer Attribution & WA Link -->
-            <footer class="w-full border-t border-white/20 bg-black/20 backdrop-blur-md py-4 text-center text-xs text-white/90">
-                <div class="w-full px-4 sm:px-6 lg:px-10 flex flex-col sm:flex-row items-center justify-between gap-2 font-heading">
+            <!-- Main Footer -->
+            <footer class="w-full border-t border-white/20 bg-black/20 backdrop-blur-md py-3 text-center text-xs text-white/90 shrink-0">
+                <div class="w-full px-3 sm:px-6 lg:px-10 flex flex-col sm:flex-row items-center justify-between gap-2 font-heading">
                     <div>
                         <strong>RacePack Pro System v1.0</strong> &bull; Indomaret Fun Run 2026
                     </div>
-                    <div class="flex items-center gap-1.5 font-semibold">
+                    <div class="flex items-center gap-1.5 font-semibold text-[11px] sm:text-xs">
                         <span>Designed &amp; Developed with ❤️ by</span>
                         <a
                             href="https://wa.me/6282243311441?text=Halo%20ES%20Software%2C%20saya%20butuh%20bantuan%20sistem%20RacePack"
                             target="_blank"
-                            class="font-black text-[#FFD400] hover:underline flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-full border border-white/30 transition hover:bg-white/20 shadow-sm"
+                            class="font-black text-[#FFD400] hover:underline flex items-center gap-1.5 bg-white/10 px-2.5 py-0.5 rounded-full border border-white/30 transition hover:bg-white/20 shadow-sm"
                         >
                             <span>MR R.x Likin / ES Software</span>
-                            <span class="text-[10px] bg-emerald-500 text-white px-1.5 py-0.2 rounded-full font-extrabold uppercase">WA Contact</span>
+                            <span class="text-[9px] bg-emerald-500 text-white px-1 py-0.2 rounded-full font-extrabold uppercase">WA</span>
                         </a>
                     </div>
                 </div>

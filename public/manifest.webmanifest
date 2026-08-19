@@ -1,0 +1,24 @@
+{
+  "name": "RacePack Pro - Indomaret Fun Run 2026",
+  "short_name": "RacePack Pro",
+  "description": "Sistem Manajemen Race Pack Collection & Loket Penukaran BIB Indomaret Fun Run 2026",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#46b0ec",
+  "theme_color": "#0E7BDC",
+  "icons": [
+    {
+      "src": "/images/logo-indomaret-funrun.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/logo-indomaret-funrun.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

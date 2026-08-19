@@ -252,24 +252,24 @@ async function submitUpdateBibName() {
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex items-center justify-between py-0.5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 py-0.5">
                 <div class="flex items-center gap-3">
-                    <span class="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span class="w-3 h-3 rounded-full bg-emerald-400 animate-ping shrink-0"></span>
                     <div>
-                        <h2 class="text-2xl font-extrabold tracking-tight text-white leading-tight font-heading drop-shadow-md">
+                        <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white leading-tight font-heading drop-shadow-md">
                             POS Loket Penukaran Race Pack
                         </h2>
-                        <p class="text-xs font-semibold text-white/90">Pencarian Fleksibel via PIN, Nomor Telepon, atau NIK KTP</p>
+                        <p class="text-[11px] sm:text-xs font-semibold text-white/90">Pencarian via PIN, Nomor Telepon, atau NIK KTP</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <span class="text-xs text-white font-mono bg-black/30 border border-white/20 px-3 py-1.5 rounded-full backdrop-blur-md">
+                <div class="flex items-center gap-2 justify-between sm:justify-end">
+                    <span class="text-[10px] sm:text-xs text-white font-mono bg-black/30 border border-white/20 px-3 py-1 rounded-full backdrop-blur-md">
                         STATUS: <span class="text-emerald-300 font-extrabold">ONLINE</span>
                     </span>
                     <button
                         v-if="participant || searchResults.length > 0"
                         @click="resetForm"
-                        class="text-xs bg-[#FFD400] hover:bg-yellow-400 text-[#0B2A8A] px-4 py-1.5 rounded-full font-extrabold shadow-lg transition flex items-center gap-1.5"
+                        class="text-xs bg-[#FFD400] hover:bg-yellow-400 text-[#0B2A8A] px-3.5 py-1.5 rounded-full font-black shadow-lg transition flex items-center gap-1 active:scale-95"
                     >
                         <span>🔄</span> Reset / Cari Baru
                     </button>
@@ -278,7 +278,7 @@ async function submitUpdateBibName() {
         </template>
 
         <!-- Container Utama (Zero-Scroll Compact POS Layout) -->
-        <div class="w-full space-y-3.5">
+        <div class="w-full space-y-3">
             <!-- Toast Flash Notification -->
             <div v-if="successFlash" class="p-3 rounded-2xl bg-emerald-500 text-white flex items-center justify-between shadow-lg text-xs font-bold animate-fade-in">
                 <div class="flex items-center gap-2">
@@ -297,23 +297,23 @@ async function submitUpdateBibName() {
             </div>
 
             <!-- GRID 2-KOLOM COMPACT POS -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-4 items-stretch">
                 
                 <!-- KOLOM KIRI (5 cols): SCANNER & FORM ASSIGN -->
-                <div class="lg:col-span-5 flex flex-col gap-3.5">
+                <div class="lg:col-span-5 flex flex-col gap-3">
                     
                     <!-- Panel Scanner PIN / Telepon / Nama -->
-                    <div class="bg-white/95 backdrop-blur-xl rounded-3xl p-4 sm:p-5 border-2 border-white shadow-xl text-slate-900 space-y-2.5">
+                    <div class="bg-white/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 border-2 border-white shadow-xl text-slate-900 space-y-2.5">
                         
-                        <!-- Search Filter Tabs -->
-                        <div class="flex items-center justify-between gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
+                        <!-- Search Filter Tabs (Grid 4 Kolom di HP & Desktop) -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
                             <button
                                 v-for="pill in searchTypePills"
                                 :key="pill.key"
                                 type="button"
                                 @click="setSearchType(pill.key)"
                                 :class="[
-                                    'flex-1 py-1 px-1.5 rounded-lg text-[10px] sm:text-[11px] font-extrabold transition flex items-center justify-center gap-1 font-heading',
+                                    'py-1.5 px-1.5 rounded-lg text-[10px] sm:text-[11px] font-extrabold transition flex items-center justify-center gap-1 font-heading active:scale-95',
                                     searchType === pill.key
                                         ? 'bg-[#0E7BDC] text-white shadow-sm'
                                         : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
@@ -330,16 +330,16 @@ async function submitUpdateBibName() {
                                 v-model="searchKeyword"
                                 type="text"
                                 autofocus
-                                class="w-full text-base font-bib tracking-wider bg-white border-2 border-slate-300 focus:border-[#0E7BDC] text-slate-900 rounded-2xl py-2.5 pl-10 pr-20 shadow-sm focus:outline-none focus:ring-0 uppercase placeholder-slate-400"
+                                class="w-full text-sm sm:text-base font-bib tracking-wider bg-white border-2 border-slate-300 focus:border-[#0E7BDC] text-slate-900 rounded-xl sm:rounded-2xl py-2.5 sm:py-3 pl-9 sm:pl-10 pr-20 shadow-sm focus:outline-none focus:ring-0 uppercase placeholder-slate-400"
                                 :placeholder="dynamicPlaceholder"
                                 autocomplete="off"
                             />
-                            <svg class="w-4 h-4 text-[#0E7BDC] absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 text-[#0E7BDC] absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                             </svg>
                             <button
                                 type="submit"
-                                class="absolute right-1.5 top-1/2 -translate-y-1/2 px-3.5 py-1.5 bg-[#0E7BDC] hover:bg-blue-600 text-white text-xs font-extrabold rounded-xl transition shadow uppercase font-heading flex items-center gap-1"
+                                class="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 sm:px-3.5 py-1.5 bg-[#0E7BDC] hover:bg-blue-600 active:scale-95 text-white text-xs font-black rounded-lg sm:rounded-xl transition shadow uppercase font-heading flex items-center gap-1"
                                 :disabled="loading"
                             >
                                 <span v-if="loading" class="animate-spin">⏳</span>
@@ -350,14 +350,14 @@ async function submitUpdateBibName() {
                         <div class="flex items-center justify-between text-[10px] text-slate-500 font-semibold pt-0.5">
                             <span class="flex items-center gap-1">
                                 <span class="bg-blue-100 text-[#0B2A8A] px-1.5 py-0.2 rounded font-bold">Tips</span>
-                                <span>Scan PIN / ketik HP / Nama</span>
+                                <span>Scan PIN / HP / Nama</span>
                             </span>
                             <span class="text-slate-400 font-mono">ENTER &crarr;</span>
                         </div>
                     </div>
 
                     <!-- Panel Multi-Match Results -->
-                    <div v-if="searchResults.length > 0 && !participant" class="bg-white/95 backdrop-blur-xl rounded-3xl p-4 border-2 border-amber-300 shadow-xl text-slate-900 space-y-2 flex-1">
+                    <div v-if="searchResults.length > 0 && !participant" class="bg-white/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 border-2 border-amber-300 shadow-xl text-slate-900 space-y-2 flex-1">
                         <div class="flex items-center justify-between border-b border-slate-200 pb-1.5">
                             <div class="flex items-center gap-1.5 text-amber-700 font-black text-xs uppercase tracking-wider font-heading">
                                 <span>📋</span>
@@ -407,7 +407,7 @@ async function submitUpdateBibName() {
 
                                 <button
                                     @click="selectParticipant(res)"
-                                    class="w-full py-1.5 px-3 bg-[#0E7BDC] hover:bg-blue-600 text-white rounded-xl font-extrabold text-xs uppercase tracking-wider transition shadow-sm flex items-center justify-center gap-1.5 font-heading"
+                                    class="w-full py-2 px-3 bg-[#0E7BDC] hover:bg-blue-600 active:scale-95 text-white rounded-xl font-extrabold text-xs uppercase tracking-wider transition shadow-sm flex items-center justify-center gap-1.5 font-heading"
                                 >
                                     <span>Pilih Peserta Ini &rarr;</span>
                                 </button>
@@ -416,7 +416,7 @@ async function submitUpdateBibName() {
                     </div>
 
                     <!-- Quick Assign BIB (Jika peserta siap assign) -->
-                    <div v-if="participant && !isClaimed" class="bg-white/95 backdrop-blur-xl rounded-3xl p-4 sm:p-5 border-2 border-emerald-400 shadow-xl text-slate-900 space-y-2.5">
+                    <div v-if="participant && !isClaimed" class="bg-white/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 border-2 border-emerald-400 shadow-xl text-slate-900 space-y-2.5">
                         <div class="flex items-center justify-between border-b border-slate-200 pb-1.5">
                             <span class="text-xs font-black uppercase text-emerald-700 tracking-wider font-heading flex items-center gap-1">
                                 <span>⚡</span> Quick Assign BIB
@@ -430,7 +430,7 @@ async function submitUpdateBibName() {
                                 v-model="bibNumber"
                                 type="text"
                                 @keyup.enter="submitAssign"
-                                class="w-full text-3xl font-bib font-black text-center tracking-widest bg-slate-50 border-2 border-emerald-500 text-emerald-700 rounded-2xl py-2 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-300"
+                                class="w-full text-2xl sm:text-3xl font-bib font-black text-center tracking-widest bg-slate-50 border-2 border-emerald-500 text-emerald-700 rounded-xl sm:rounded-2xl py-2 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-300"
                                 placeholder="Nomor BIB..."
                             />
                         </div>
@@ -447,14 +447,14 @@ async function submitUpdateBibName() {
                         <button
                             @click="submitAssign"
                             :disabled="!identityConfirmed || !bibNumber"
-                            class="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-md shadow-emerald-500/25 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 font-heading"
+                            class="w-full py-3 sm:py-3.5 px-4 rounded-xl sm:rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 active:scale-95 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-md shadow-emerald-500/25 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 font-heading"
                         >
                             <span>✓ Konfirmasi &amp; Cetak Struk</span>
                         </button>
                     </div>
 
                     <!-- Tombol Reset Sengketa (Jika PIN Sudah Claimed) -->
-                    <div v-else-if="participant && isClaimed" class="bg-white/95 backdrop-blur-xl rounded-3xl p-4 sm:p-5 border-2 border-amber-400 shadow-xl text-slate-900 space-y-2.5">
+                    <div v-else-if="participant && isClaimed" class="bg-white/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 border-2 border-amber-400 shadow-xl text-slate-900 space-y-2.5">
                         <div class="text-xs font-black text-amber-800 flex items-center gap-1.5 font-heading">
                             <span>⚠️</span> PIN Ini Terdaftar Sudah Ditukar
                         </div>
@@ -463,14 +463,14 @@ async function submitUpdateBibName() {
                         </p>
                         <button
                             @click="openResetModal"
-                            class="w-full py-2.5 px-4 bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs uppercase rounded-2xl transition shadow flex items-center justify-center gap-1.5 tracking-wider font-heading"
+                            class="w-full py-2.5 px-4 bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-extrabold text-xs uppercase rounded-xl sm:rounded-2xl transition shadow flex items-center justify-center gap-1.5 tracking-wider font-heading"
                         >
                             <span>🔐 Otorisasi Admin: Reset Sengketa PIN</span>
                         </button>
                     </div>
 
                     <!-- Tips Petugas (Jika Idle) -->
-                    <div v-else-if="searchResults.length === 0 && !participant" class="p-4 rounded-3xl bg-white/90 border-2 border-white text-slate-700 text-xs space-y-1.5 shadow-md">
+                    <div v-else-if="searchResults.length === 0 && !participant" class="p-3.5 sm:p-4 rounded-2xl sm:rounded-3xl bg-white/90 border-2 border-white text-slate-700 text-xs space-y-1.5 shadow-md">
                         <div class="font-extrabold text-slate-900 font-heading text-xs">💡 Tips Pencarian:</div>
                         <ul class="list-disc list-inside space-y-0.5 text-[11px] font-medium text-slate-600">
                             <li><strong>Kode PIN:</strong> Scan barcode struk atau ketik PIN.</li>
@@ -484,7 +484,7 @@ async function submitUpdateBibName() {
                 <div class="lg:col-span-7 flex flex-col">
                     
                     <!-- Kartu Rincian Peserta -->
-                    <div v-if="participant" class="bg-white/95 backdrop-blur-xl rounded-3xl p-5 sm:p-6 border-2 border-white shadow-xl text-slate-900 space-y-4 h-full flex flex-col justify-between">
+                    <div v-if="participant" class="bg-white/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 border-2 border-white shadow-xl text-slate-900 space-y-3.5 h-full flex flex-col justify-between">
                         
                         <div>
                             <!-- Alert Banner Sengketa / Already Claimed -->
@@ -505,17 +505,17 @@ async function submitUpdateBibName() {
                             </div>
 
                             <!-- Header Info Peserta (Nama Besar & Status) -->
-                            <div class="flex items-start justify-between border-b border-slate-200 pb-3.5">
-                                <div class="flex items-center gap-3.5">
-                                    <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-[#0B2A8A] to-[#0E7BDC] text-white font-black flex items-center justify-center text-2xl sm:text-3xl font-heading shadow-md shrink-0">
+                            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 border-b border-slate-200 pb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-[#0B2A8A] to-[#0E7BDC] text-white font-black flex items-center justify-center text-xl sm:text-3xl font-heading shadow-md shrink-0">
                                         {{ (participant.bib_name || participant.full_name).charAt(0) }}
                                     </div>
-                                    <div>
-                                        <div class="text-[10px] font-extrabold uppercase tracking-wider text-[#0E7BDC] font-heading flex items-center gap-2">
+                                    <div class="min-w-0 flex-1">
+                                        <div class="text-[10px] font-extrabold uppercase tracking-wider text-[#0E7BDC] font-heading flex items-center gap-2 flex-wrap">
                                             <span>Identitas Peserta Terverifikasi</span>
                                             <button
                                                 @click="openEditBibNameModal"
-                                                class="px-2 py-0.5 rounded-full bg-yellow-100 hover:bg-[#FFD400] text-[#0B2A8A] border border-yellow-300 font-extrabold text-[10px] transition flex items-center gap-1 shadow-xs"
+                                                class="px-2 py-0.5 rounded-full bg-yellow-100 hover:bg-[#FFD400] active:scale-95 text-[#0B2A8A] border border-yellow-300 font-extrabold text-[10px] transition flex items-center gap-1 shadow-xs"
                                                 title="Edit Nama Tampil di BIB"
                                             >
                                                 <span>✏️</span>
@@ -523,49 +523,49 @@ async function submitUpdateBibName() {
                                             </button>
                                         </div>
                                         <div class="flex items-center gap-2 mt-0.5">
-                                            <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight font-heading">
+                                            <h3 class="text-xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight font-heading truncate">
                                                 {{ participant.bib_name || participant.full_name }}
                                             </h3>
                                         </div>
-                                        <div v-if="participant.bib_name && participant.full_name && participant.bib_name !== participant.full_name" class="text-xs text-slate-500 font-semibold mt-0.5">
+                                        <div v-if="participant.bib_name && participant.full_name && participant.bib_name !== participant.full_name" class="text-xs text-slate-500 font-semibold mt-0.5 truncate">
                                             Pemesan / Pembeli Tiket: <strong class="text-slate-800">{{ participant.full_name }}</strong>
                                         </div>
                                     </div>
                                 </div>
                                 <span
                                     :class="isClaimed ? 'bg-amber-100 text-amber-800 border-amber-300' : 'bg-emerald-100 text-emerald-800 border-emerald-300'"
-                                    class="px-3.5 py-1 rounded-full text-xs font-black border shrink-0 font-heading"
+                                    class="self-start px-3.5 py-1 rounded-full text-xs font-black border shrink-0 font-heading"
                                 >
                                     {{ isClaimed ? 'SUDAH DITUKAR' : 'SIAP ASSIGN' }}
                                 </span>
                             </div>
                         </div>
 
-                        <!-- 3 Kartu Rincian Jelas & Besar (100% Zero-Scroll) -->
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 my-auto">
+                        <!-- 3 Kartu Rincian Jelas & Besar (Mobile & Desktop Responsive) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3.5 my-auto">
                             <!-- 1. Hero Card: Ukuran Jersey -->
-                            <div class="bg-gradient-to-br from-yellow-50 to-amber-100/70 p-4 rounded-2xl border-2 border-yellow-400 shadow-sm flex flex-col justify-between">
-                                <div class="flex items-center justify-between mb-1">
+                            <div class="bg-gradient-to-br from-yellow-50 to-amber-100/70 p-3.5 sm:p-4 rounded-2xl border-2 border-yellow-400 shadow-sm flex sm:flex-col justify-between items-center sm:items-start">
+                                <div class="flex items-center justify-between sm:w-full mb-1">
                                     <span class="block text-[11px] uppercase font-black text-amber-900 tracking-wider font-heading">👕 Ukuran Jersey</span>
-                                    <span class="text-[9px] bg-yellow-300 text-yellow-950 font-black px-2 py-0.5 rounded-full font-mono shadow-xs">SERAHKAN</span>
+                                    <span class="hidden sm:inline text-[9px] bg-yellow-300 text-yellow-950 font-black px-2 py-0.5 rounded-full font-mono shadow-xs">SERAHKAN</span>
                                 </div>
-                                <div class="text-4xl sm:text-5xl font-black text-amber-950 font-mono tracking-wider my-1">
+                                <div class="text-3xl sm:text-5xl font-black text-amber-950 font-mono tracking-wider my-0 sm:my-1">
                                     {{ participant.jersey_size || '-' }}
                                 </div>
                             </div>
 
                             <!-- 2. Card: Nomor HP / WhatsApp -->
-                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col justify-between">
-                                <span class="block text-[10px] uppercase font-extrabold text-slate-500 tracking-wider font-heading mb-1">📱 Nomor HP / WA</span>
-                                <div class="text-lg sm:text-xl font-black text-slate-900 font-mono my-1">
+                            <div class="bg-slate-50 p-3 sm:p-4 rounded-2xl border border-slate-200 flex sm:flex-col justify-between items-center sm:items-start">
+                                <span class="block text-[10px] uppercase font-extrabold text-slate-500 tracking-wider font-heading mb-0 sm:mb-1">📱 Nomor HP / WA</span>
+                                <div class="text-base sm:text-xl font-black text-slate-900 font-mono my-0 sm:my-1">
                                     {{ participant.phone || '-' }}
                                 </div>
                             </div>
 
                             <!-- 3. Card: Alamat Email -->
-                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col justify-between">
-                                <span class="block text-[10px] uppercase font-extrabold text-slate-500 tracking-wider font-heading mb-1">✉️ Alamat Email</span>
-                                <div class="text-sm sm:text-base font-bold text-slate-800 font-mono truncate my-1" :title="participant.email">
+                            <div class="bg-slate-50 p-3 sm:p-4 rounded-2xl border border-slate-200 flex sm:flex-col justify-between items-center sm:items-start">
+                                <span class="block text-[10px] uppercase font-extrabold text-slate-500 tracking-wider font-heading mb-0 sm:mb-1">✉️ Alamat Email</span>
+                                <div class="text-xs sm:text-base font-bold text-slate-800 font-mono truncate my-0 sm:my-1 max-w-[180px] sm:max-w-none" :title="participant.email">
                                     {{ participant.email || '-' }}
                                 </div>
                             </div>
@@ -579,8 +579,8 @@ async function submitUpdateBibName() {
                     </div>
 
                     <!-- State Menunggu / Multiple Results Hint -->
-                    <div v-else-if="searchResults.length > 0" class="glass-card rounded-3xl p-8 border border-white/20 text-center text-white space-y-2 h-full flex flex-col items-center justify-center">
-                        <div class="text-4xl">👥</div>
+                    <div v-else-if="searchResults.length > 0" class="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/20 text-center text-white space-y-2 h-full flex flex-col items-center justify-center">
+                        <div class="text-3xl sm:text-4xl">👥</div>
                         <div class="text-base font-bold">Silakan Pilih Salah Satu Peserta</div>
                         <p class="text-xs max-w-sm mx-auto text-white/80">
                             Pencarian menghasilkan {{ searchResults.length }} peserta. Klik tombol <strong>Pilih Peserta Ini</strong> pada kolom sebelah kiri.
@@ -588,9 +588,9 @@ async function submitUpdateBibName() {
                     </div>
 
                     <!-- State Idle (Menunggu Scan) -->
-                    <div v-else class="glass-card rounded-3xl p-8 border border-white/20 text-center text-white space-y-2 h-full flex flex-col items-center justify-center">
-                        <div class="text-5xl drop-shadow-md">🏷️</div>
-                        <div class="text-lg font-black tracking-tight font-heading">POS Loket Siap</div>
+                    <div v-else class="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/20 text-center text-white space-y-2 h-full flex flex-col items-center justify-center py-8">
+                        <div class="text-4xl sm:text-5xl drop-shadow-md">🏷️</div>
+                        <div class="text-base sm:text-lg font-black tracking-tight font-heading">POS Loket Siap</div>
                         <p class="text-xs max-w-sm mx-auto text-white/90 font-medium leading-relaxed">
                             Silakan posisikan barcode di depan scanner atau ketikkan kode PIN / No. Telepon / Nama pada kolom sebelah kiri.
                         </p>
