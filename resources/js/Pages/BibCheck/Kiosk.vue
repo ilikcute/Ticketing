@@ -115,7 +115,8 @@ function openEditNameModal() {
         clearTimeout(autoResetTimer);
         autoResetTimer = null;
     }
-    editingBibName.value = result.value.bib_name || result.value.full_name || "";
+    editingBibName.value =
+        result.value.bib_name || result.value.full_name || "";
     editError.value = "";
     showEditModal.value = true;
     nextTick(() => editInputRef.value?.focus());
@@ -133,13 +134,15 @@ async function submitEditName() {
     editError.value = "";
 
     try {
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        const res = await fetch('/bib-check/update-name', {
-            method: 'POST',
+        const csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute("content");
+        const res = await fetch("/bib-check/update-name", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken || '',
-                'Accept': 'application/json',
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken || "",
+                Accept: "application/json",
             },
             body: JSON.stringify({
                 code: result.value.pin_code || result.value.bib_number,
@@ -157,7 +160,9 @@ async function submitEditName() {
         // Perbarui data lokal secara instan
         result.value.bib_name = data.bib_name;
         showEditModal.value = false;
-        showSuccessToast(`Nama di BIB berhasil diubah menjadi "${data.bib_name}"!`);
+        showSuccessToast(
+            `Nama di BIB berhasil diubah menjadi "${data.bib_name}"!`,
+        );
     } catch {
         editError.value = "Terjadi kesalahan koneksi ke server.";
     } finally {
@@ -322,9 +327,9 @@ async function submitEditName() {
             </div>
         </header>
 
-        <!-- Main Display Content (Positioned higher with bold photogenic typography) -->
+        <!-- Main Display Content (Single Unified Marathon Race BIB Card Element) -->
         <main
-            class="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-start pt-1 sm:pt-2 -mt-2 sm:-mt-4 lg:-mt-6 space-y-2.5"
+            class="relative z-10 mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-start pt-1 sm:pt-2 -mt-2 sm:-mt-4 lg:-mt-6 space-y-2.5"
         >
             <!-- Toast Flash Sukses (Auto-close 3.5s) -->
             <div
@@ -373,87 +378,152 @@ async function submitEditName() {
                 </button>
             </div>
 
-            <!-- Result State (Photogenic Hero View) -->
+            <!-- Result State (Single Unified Marathon Race BIB Card) -->
             <div
                 v-else-if="result"
-                class="w-full space-y-3 animate-[fadeInUp_0.4s_ease-out]"
+                class="w-full space-y-2 animate-[fadeInUp_0.4s_ease-out]"
             >
-                <!-- Nomor BIB Display Card (Large, Bold, Photogenic) -->
+                <!-- KARTU BIB TUNGGAL (1 UNIFIED MARATHON RACE BIB CARD) -->
                 <div
-                    class="relative overflow-hidden rounded-[28px] border-4 border-[#0B34AA]/25 bg-white/95 backdrop-blur-md py-3 px-6 sm:py-4 sm:px-8 text-center text-[#0B2A8A] shadow-[0_20px_50px_rgba(11,42,138,0.18)]"
+                    class="w-full bg-white rounded-3xl sm:rounded-[32px] shadow-[0_25px_60px_rgba(0,0,0,0.30)] border-4 border-white/95 overflow-hidden relative select-all"
                 >
-                    <div class="mb-1 flex items-center justify-center gap-3">
-                        <span class="h-0.5 w-8 bg-[#FFD400] sm:w-12"></span>
-                        <span
-                            class="text-xs font-black uppercase tracking-[0.3em] text-slate-500 sm:text-sm font-heading"
-                            >NOMOR BIB</span
-                        >
-                        <span class="h-0.5 w-8 bg-[#FFD400] sm:w-12"></span>
-                    </div>
-
+                    <!-- Top Header Bar (Red Marathon Ribbon dengan 2 Lubang Peniti) -->
                     <div
-                        class="font-bib-display my-0 text-8xl sm:text-9xl md:text-[9.5rem] lg:text-[11rem] font-black leading-none tracking-widest text-[#0B2A8A] drop-shadow-[0_6px_16px_rgba(11,42,138,0.22)] select-all"
+                        class="relative bg-gradient-to-r from-[#E31B23] via-[#E31B23] to-[#D0151D] text-white py-2.5 sm:py-3.5 px-6 sm:px-10 flex items-center justify-between shadow-md"
                     >
-                        {{ result.bib_number ?? "—" }}
-                    </div>
-                </div>
-
-                <!-- Kartu Identitas Peserta / BIB (Extra Large, Clean, Champion Feel) -->
-                <div
-                    class="rounded-[28px] border-4 border-[#0B34AA]/25 bg-white/95 backdrop-blur-md py-3.5 px-6 sm:py-4.5 sm:px-8 text-center text-[#0B2A8A] shadow-[0_20px_50px_rgba(11,42,138,0.18)] relative group"
-                >
-                    <div class="mb-1 flex items-center justify-center gap-3">
-                        <span class="h-0.5 w-8 bg-[#FFD400] sm:w-12"></span>
-                        <span
-                            class="text-xs font-black uppercase tracking-[0.3em] text-slate-500 sm:text-sm font-heading"
-                            >NAMA TAMPIL DI BIB</span
-                        >
-                        <span class="h-0.5 w-8 bg-[#FFD400] sm:w-12"></span>
-                    </div>
-
-                    <!-- Nama Tampil di BIB & Tombol Edit -->
-                    <div class="flex items-center justify-center gap-3 my-1">
+                        <!-- Lubang Peniti Kiri Atas -->
                         <div
-                            class="font-runner-name truncate text-2xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-black tracking-tight text-[#0B2A8A] leading-tight select-all drop-shadow-sm"
-                        >
-                            {{ result.bib_name || result.full_name || "—" }}
+                            class="w-5 h-5 sm:w-7 sm:h-7 rounded-full bg-slate-100/90 border-2 border-slate-300 shadow-inner shrink-0"
+                        ></div>
+
+                        <!-- Header Event Title -->
+                        <div class="text-center flex-1 px-3">
+                            <h2
+                                class="text-base sm:text-2xl md:text-3xl font-black uppercase tracking-[0.18em] font-heading drop-shadow-sm text-white"
+                            >
+                                {{ event?.name || "INDOMARET FUN RUN 2026" }}
+                            </h2>
+                            <div
+                                class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-yellow-200"
+                            >
+                                {{ event?.date || "30 AGUSTUS 2026" }} &bull;
+                                {{ event?.location || "YOGYAKARTA" }}
+                            </div>
                         </div>
-                        <button
-                            @click.stop="openEditNameModal"
-                            class="p-2 rounded-full bg-yellow-100 hover:bg-[#FFD400] text-[#0B2A8A] border-2 border-yellow-400 shadow-md transition hover:scale-110 shrink-0"
-                            title="Edit / Sesuaikan Nama Tampil di BIB"
-                        >
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-                            </svg>
-                        </button>
+
+                        <!-- Lubang Peniti Kanan Atas -->
+                        <div
+                            class="w-5 h-5 sm:w-7 sm:h-7 rounded-full bg-slate-100/90 border-2 border-slate-300 shadow-inner shrink-0"
+                        ></div>
                     </div>
 
-                    <!-- Subtext Info Jika Beda Dengan Pembeli Asli -->
+                    <!-- Center Body: Nomor BIB, Nama Runners, & Detail Kategori -->
                     <div
-                        v-if="result.full_name && result.bib_name && result.bib_name !== result.full_name"
-                        class="text-xs text-slate-500 font-semibold mb-2"
+                        class="bg-white py-3 sm:py-5 px-6 sm:px-10 text-center flex flex-col items-center justify-center space-y-1.5"
                     >
-                        Pembeli / Pemesan: <strong class="text-slate-800">{{ result.full_name }}</strong>
+                        <!-- NOMOR BIB RAKSASA -->
+                        <div
+                            class="font-bib-display my-0 text-8xl sm:text-9xl md:text-[10.5rem] lg:text-[12rem] font-black leading-none tracking-widest text-[#0B2A8A] drop-shadow-[0_6px_16px_rgba(11,42,138,0.22)] select-all"
+                        >
+                            {{ result.bib_number ?? "—" }}
+                        </div>
+
+                        <!-- NAMA RUNNER -->
+                        <div class="w-full">
+                            <div
+                                class="font-runner-name truncate text-2xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-black tracking-tight text-[#0B2A8A] uppercase leading-tight select-all drop-shadow-xs"
+                            >
+                                {{
+                                    result.bib_name ||
+                                    result.full_name ||
+                                    "—"
+                                }}
+                            </div>
+
+                            <!-- Subtext Info Jika Beda Dengan Pembeli Asli -->
+                            <div
+                                v-if="
+                                    result.full_name &&
+                                    result.bib_name &&
+                                    result.bib_name !== result.full_name
+                                "
+                                class="text-xs sm:text-sm text-slate-500 font-semibold mt-1"
+                            >
+                                Pembeli / Pemesan:
+                                <strong class="text-slate-800">{{
+                                    result.full_name
+                                }}</strong>
+                            </div>
+                        </div>
+
+                        <!-- Kategori & Detail Runner (Badges) -->
+                        <div
+                            class="flex items-center justify-center gap-2 sm:gap-3 flex-wrap pt-1.5"
+                        >
+                            <span
+                                class="px-4 py-1 rounded-full bg-blue-50 text-[#0B2A8A] border-2 border-blue-200 font-black text-xs sm:text-sm uppercase tracking-wider font-heading shadow-xs"
+                            >
+                                {{ result.category || "5K FUN RUN" }}
+                            </span>
+                            <span
+                                v-if="
+                                    result?.jersey_size &&
+                                    result.jersey_size !== '-'
+                                "
+                                class="px-4 py-1 rounded-full bg-gradient-to-r from-yellow-200 to-amber-300 text-yellow-950 border-2 border-yellow-400 font-black text-xs sm:text-sm uppercase font-mono shadow-xs"
+                            >
+                                JERSEY: {{ result.jersey_size }}
+                            </span>
+                            <span
+                                v-if="result?.gender"
+                                class="px-4 py-1 rounded-full bg-slate-100 text-slate-700 border-2 border-slate-200 font-bold text-xs sm:text-sm uppercase shadow-xs"
+                            >
+                                {{
+                                    ["L", "M"].includes(result.gender)
+                                        ? "PRIA"
+                                        : ["P", "F"].includes(result.gender)
+                                          ? "WANITA"
+                                          : result.gender
+                                }}
+                            </span>
+                        </div>
                     </div>
 
-                    <!-- Badges Row -->
-                    <div class="mt-2 flex items-center justify-center gap-2.5 flex-wrap text-xs sm:text-sm font-bold uppercase tracking-wider">
-                        <span v-if="result?.category" class="px-3.5 py-1 rounded-full bg-blue-50 text-[#0B2A8A] border-2 border-blue-200 font-black shadow-xs">
-                            {{ result.category }}
-                        </span>
-                        <span v-if="result?.jersey_size && result.jersey_size !== '-'" class="px-3.5 py-1 rounded-full bg-gradient-to-r from-yellow-200 to-amber-300 text-yellow-950 border-2 border-yellow-400 font-black font-mono shadow-xs">
-                            JERSEY: {{ result.jersey_size }}
-                        </span>
-                        <span v-if="result?.gender" class="px-3.5 py-1 rounded-full bg-slate-100 text-slate-700 border-2 border-slate-200 font-bold shadow-xs">
-                            {{ ['L', 'M'].includes(result.gender) ? 'PRIA' : (['P', 'F'].includes(result.gender) ? 'WANITA' : result.gender) }}
-                        </span>
-                        <button
-                            @click.stop="openEditNameModal"
-                            class="px-3.5 py-1 rounded-full bg-[#0E7BDC] hover:bg-blue-600 text-white font-black text-xs uppercase shadow-md transition flex items-center gap-1.5 font-heading hover:scale-105"
+                    <!-- Bottom Footer Bar (Black / Dark Navy Timing Bar dengan 2 Lubang Peniti) -->
+                    <div
+                        class="relative bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white py-2.5 sm:py-3 px-6 sm:px-10 flex items-center justify-between border-t-2 border-slate-200 shadow-inner"
+                    >
+                        <!-- Lubang Peniti Kiri Bawah -->
+                        <div
+                            class="w-5 h-5 sm:w-7 sm:h-7 rounded-full bg-slate-100/90 border-2 border-slate-400 shadow-inner shrink-0"
+                        ></div>
+
+                        <!-- Timing Badges & Tombol Ubah Nama BIB -->
+                        <div
+                            class="flex items-center justify-center gap-3 sm:gap-4 flex-wrap"
                         >
-                            <span>✏️ Ubah Nama BIB</span>
-                        </button>
+                            <span
+                                class="px-3 py-0.5 rounded bg-white/10 border border-white/20 text-yellow-300 font-black text-[11px] sm:text-xs tracking-wider uppercase font-mono"
+                            >
+                                Indomaret Fun Run
+                            </span>
+                            <span
+                                class="px-3 py-0.5 rounded bg-white/10 border border-white/20 text-sky-300 font-bold text-[11px] sm:text-xs tracking-wider uppercase font-mono"
+                            >
+                                BibTag Timing
+                            </span>
+                            <button
+                                @click.stop="openEditNameModal"
+                                class="px-4 py-1.5 rounded-full bg-[#FFD400] hover:bg-yellow-400 text-[#0B2A8A] font-black text-xs sm:text-sm uppercase shadow-md transition flex items-center gap-1.5 font-heading hover:scale-105"
+                            >
+                                <span>✏️ Ubah Nama BIB</span>
+                            </button>
+                        </div>
+
+                        <!-- Lubang Peniti Kanan Bawah -->
+                        <div
+                            class="w-5 h-5 sm:w-7 sm:h-7 rounded-full bg-slate-100/90 border-2 border-slate-400 shadow-inner shrink-0"
+                        ></div>
                     </div>
                 </div>
 
@@ -461,7 +531,7 @@ async function submitEditName() {
                 <div class="pt-1 text-center">
                     <button
                         @click="resetToIdle"
-                        class="rounded-full bg-black/35 hover:bg-black/55 px-6 py-2 text-xs font-black text-white backdrop-blur-md transition shadow-md hover:scale-105 uppercase tracking-wider font-heading"
+                        class="rounded-full bg-black/40 hover:bg-black/60 px-6 py-2 text-xs font-black text-white backdrop-blur-md transition shadow-md hover:scale-105 uppercase tracking-wider font-heading"
                     >
                         ✕ Reset / Scan Peserta Berikutnya
                     </button>
@@ -575,10 +645,14 @@ async function submitEditName() {
                 class="bg-slate-900 border-2 border-slate-700 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 text-slate-900"
                 @click.stop
             >
-                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div
+                    class="flex items-center justify-between border-b border-slate-800 pb-3"
+                >
                     <div class="flex items-center gap-2 text-yellow-400">
                         <span class="text-xl">✏️</span>
-                        <h3 class="font-extrabold text-base text-white font-heading">
+                        <h3
+                            class="font-extrabold text-base text-white font-heading"
+                        >
                             Ubah Nama Tampil di BIB
                         </h3>
                     </div>
@@ -598,12 +672,16 @@ async function submitEditName() {
                 </div>
 
                 <div class="text-xs text-slate-300 leading-relaxed">
-                    Tiket ini terdaftar atas pembelian pool / kolektif. Masukkan <strong>Nama Pelari</strong> yang sebenarnya yang akan dicetak/tampil pada nomor BIB:
+                    Tiket ini terdaftar atas pembelian pool / kolektif. Masukkan
+                    <strong>Nama Pelari</strong> yang sebenarnya yang akan
+                    dicetak/tampil pada nomor BIB:
                 </div>
 
                 <form @submit.prevent="submitEditName" class="space-y-3.5">
                     <div>
-                        <label class="block text-xs font-bold text-slate-300 uppercase mb-1">
+                        <label
+                            class="block text-xs font-bold text-slate-300 uppercase mb-1"
+                        >
                             Nama Tampil di BIB (Runner Name)
                         </label>
                         <input
@@ -622,7 +700,11 @@ async function submitEditName() {
                             :disabled="editSubmitting || !editingBibName.trim()"
                             class="flex-1 py-3 px-4 bg-[#FFD400] hover:bg-yellow-400 text-[#0B2A8A] font-black text-xs uppercase tracking-wider rounded-xl shadow-lg disabled:opacity-40 transition font-heading"
                         >
-                            {{ editSubmitting ? 'Menyimpan...' : '✓ Simpan Nama Baru' }}
+                            {{
+                                editSubmitting
+                                    ? "Menyimpan..."
+                                    : "✓ Simpan Nama Baru"
+                            }}
                         </button>
 
                         <button
