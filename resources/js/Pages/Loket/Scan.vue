@@ -313,11 +313,11 @@ function resetForm() {
                             <div
                                 v-for="res in searchResults"
                                 :key="res.id"
-                                class="p-3.5 rounded-2xl border transition bg-slate-50 hover:bg-blue-50/70 border-slate-200 hover:border-[#0E7BDC] space-y-2"
+                                class="p-3.5 rounded-2xl border transition bg-slate-50 hover:bg-blue-50/70 border-slate-200 hover:border-[#0E7BDC] space-y-2.5"
                             >
                                 <div class="flex items-start justify-between gap-2">
                                     <div>
-                                        <!-- Nama Tampil di BIB -->
+                                        <!-- Nama Peserta -->
                                         <div class="font-extrabold text-sm text-slate-900 font-heading leading-tight">
                                             {{ res.bib_name || res.full_name }}
                                         </div>
@@ -325,12 +325,9 @@ function resetForm() {
                                         <div v-if="res.bib_name && res.full_name && res.bib_name !== res.full_name" class="text-[10px] text-slate-500 font-semibold mt-0.5">
                                             Pemesan: <strong class="text-slate-700">{{ res.full_name }}</strong>
                                         </div>
-                                        <div class="text-[10px] font-extrabold text-[#0E7BDC] uppercase font-heading mt-0.5 flex items-center gap-1.5 flex-wrap">
-                                            <span>{{ res.category_name }}</span>
-                                            <span>&bull;</span>
-                                            <span>{{ ['L', 'M'].includes(res.gender) ? 'Pria (L)' : (['P', 'F'].includes(res.gender) ? 'Wanita (P)' : (res.gender || '-')) }}</span>
-                                            <span v-if="res.jersey_size" class="px-1.5 py-0.2 rounded bg-yellow-100 text-yellow-800 border border-yellow-300 font-black text-[9px]">
-                                                JERSEY: {{ res.jersey_size }}
+                                        <div v-if="res.jersey_size" class="mt-1">
+                                            <span class="px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-900 border border-yellow-300 font-black text-[10px] font-mono">
+                                                👕 JERSEY: {{ res.jersey_size }}
                                             </span>
                                         </div>
                                     </div>
@@ -342,18 +339,14 @@ function resetForm() {
                                     </span>
                                 </div>
 
-                                <div class="grid grid-cols-2 gap-2 text-[11px] font-mono text-slate-600 bg-white p-2 rounded-xl border border-slate-200">
+                                <div class="grid grid-cols-2 gap-2 text-[11px] font-mono text-slate-600 bg-white p-2.5 rounded-xl border border-slate-200">
                                     <div>
-                                        <span class="text-[9px] block text-slate-400 font-sans font-bold uppercase">PIN Code:</span>
-                                        <strong class="text-[#0B2A8A]">{{ res.pin_code }}</strong>
+                                        <span class="text-[9px] block text-slate-400 font-sans font-bold uppercase">📱 No. HP:</span>
+                                        <strong class="text-slate-800">{{ res.phone || '-' }}</strong>
                                     </div>
                                     <div>
-                                        <span class="text-[9px] block text-slate-400 font-sans font-bold uppercase">No. Telp / HP:</span>
-                                        <strong>{{ res.phone || '-' }}</strong>
-                                    </div>
-                                    <div class="col-span-2">
-                                        <span class="text-[9px] block text-slate-400 font-sans font-bold uppercase">NIK / ID Card:</span>
-                                        <strong>{{ res.id_card_number || '-' }}</strong>
+                                        <span class="text-[9px] block text-slate-400 font-sans font-bold uppercase">✉️ Email:</span>
+                                        <strong class="text-slate-800 truncate block">{{ res.email || '-' }}</strong>
                                     </div>
                                 </div>
 
@@ -393,7 +386,7 @@ function resetForm() {
                                 v-model="identityConfirmed"
                                 class="rounded bg-white border-emerald-500 text-emerald-600 focus:ring-emerald-500 w-4 h-4"
                             />
-                            <span class="font-extrabold text-xs">KTP / SIM Fisik Cocok Dengan Peserta</span>
+                            <span class="font-extrabold text-xs">Data Peserta Sesuai &amp; Terverifikasi</span>
                         </label>
 
                         <button
@@ -411,7 +404,7 @@ function resetForm() {
                             <span>⚠️</span> PIN Ini Terdaftar Sudah Ditukar
                         </div>
                         <p class="text-xs font-semibold text-slate-600 leading-relaxed">
-                            Jika peserta di hadapan Anda memiliki KTP fisik &amp; nota bayar asli (sengketa/salah klaim awal), lakukan otorisasi reset di bawah:
+                            Jika peserta di hadapan Anda memiliki bukti fisik &amp; nota bayar asli (sengketa/salah klaim awal), lakukan otorisasi reset di bawah:
                         </p>
                         <button
                             @click="openResetModal"
@@ -427,7 +420,6 @@ function resetForm() {
                         <ul class="list-disc list-inside space-y-1 text-xs font-medium text-slate-600">
                             <li><strong>Kode PIN:</strong> Scan barcode struk atau ketik kode PIN (contoh: <code>TIX-...</code>).</li>
                             <li><strong>Nomor HP (phone):</strong> Ketik nomor telepon peserta (contoh: <code>08123456789</code>).</li>
-                            <li><strong>NIK (id_card_number):</strong> Ketik 16 digit nomor KTP/SIM peserta.</li>
                             <li><strong>Nama:</strong> Ketik nama pelari atau nama pembeli tiket.</li>
                             <li>Tekan <kbd class="px-2 py-0.5 bg-slate-200 text-slate-800 rounded font-mono text-[10px] font-bold">ENTER</kbd> untuk pencarian instan.</li>
                         </ul>
@@ -456,87 +448,61 @@ function resetForm() {
                             </div>
                         </div>
 
-                        <!-- Header Info Peserta -->
-                        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#0B2A8A] to-[#0E7BDC] text-white font-black flex items-center justify-center text-xl font-heading shadow-md">
+                        <!-- Header Info Peserta (Nama & Ukuran) -->
+                        <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+                            <div class="flex items-center gap-3.5">
+                                <div class="w-13 h-13 rounded-2xl bg-gradient-to-br from-[#0B2A8A] to-[#0E7BDC] text-white font-black flex items-center justify-center text-2xl font-heading shadow-md">
                                     {{ (participant.bib_name || participant.full_name).charAt(0) }}
                                 </div>
                                 <div>
                                     <div class="text-[10px] font-extrabold uppercase tracking-wider text-[#0E7BDC] font-heading flex items-center gap-2">
-                                        <span>Nama Tampil di BIB (Pelari)</span>
-                                        <span v-if="participant.jersey_size" class="px-2 py-0.5 rounded-full bg-[#FFD400] text-[#0B2A8A] font-black text-[10px] font-mono shadow-sm">
+                                        <span>Nama Peserta</span>
+                                        <span v-if="participant.jersey_size" class="px-2.5 py-0.5 rounded-full bg-[#FFD400] text-[#0B2A8A] font-black text-[11px] font-mono shadow-sm">
                                             👕 UKURAN: {{ participant.jersey_size }}
                                         </span>
                                     </div>
-                                    <h3 class="text-2xl font-black text-slate-900 tracking-tight leading-tight font-heading">
+                                    <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight font-heading mt-0.5">
                                         {{ participant.bib_name || participant.full_name }}
                                     </h3>
-                                    <div v-if="participant.bib_name && participant.full_name && participant.bib_name !== participant.full_name" class="text-xs text-slate-500 font-semibold mt-0.5">
+                                    <div v-if="participant.bib_name && participant.full_name && participant.bib_name !== participant.full_name" class="text-xs text-slate-500 font-semibold mt-1">
                                         Pemesan / Pembeli Tiket: <strong class="text-slate-800">{{ participant.full_name }}</strong>
                                     </div>
                                 </div>
                             </div>
                             <span
                                 :class="isClaimed ? 'bg-amber-100 text-amber-800 border-amber-300' : 'bg-emerald-100 text-emerald-800 border-emerald-300'"
-                                class="px-3.5 py-1.5 rounded-full text-xs font-extrabold border shrink-0"
+                                class="px-4 py-1.5 rounded-full text-xs font-extrabold border shrink-0"
                             >
                                 {{ isClaimed ? 'SUDAH DITUKAR' : 'SIAP ASSIGN' }}
                             </span>
                         </div>
 
-                        <!-- Grid Identitas Peserta -->
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
-                            <!-- Kategori Lari -->
-                            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
-                                <span class="block text-[10px] uppercase font-extrabold text-slate-500">Kategori Lari</span>
-                                <span class="text-sm font-black text-[#0B2A8A] font-heading">{{ participant.category?.name || '-' }}</span>
-                            </div>
-
-                            <!-- Ukuran Jersey -->
-                            <div class="bg-gradient-to-br from-yellow-50 to-amber-50 p-3 rounded-2xl border-2 border-yellow-300 shadow-sm">
-                                <div class="flex items-center justify-between">
-                                    <span class="block text-[10px] uppercase font-extrabold text-amber-800">👕 Ukuran Jersey</span>
-                                    <span class="text-[9px] bg-yellow-200 text-yellow-900 font-bold px-1.5 py-0.2 rounded font-mono">SERAHKAN</span>
+                        <!-- Grid Rincian: Hanya Nama, Ukuran Jersey, Nomor HP, dan Email -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-1">
+                            <!-- 1. Ukuran Jersey -->
+                            <div class="bg-gradient-to-br from-yellow-50 to-amber-50 p-4 rounded-2xl border-2 border-yellow-400 shadow-sm flex flex-col justify-between">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="block text-[11px] uppercase font-black text-amber-900 tracking-wider font-heading">👕 Ukuran Jersey</span>
+                                    <span class="text-[9px] bg-yellow-200 text-yellow-900 font-black px-2 py-0.5 rounded-full font-mono">SERAHKAN</span>
                                 </div>
-                                <span class="text-base font-black text-amber-900 font-mono">{{ participant.jersey_size || '-' }}</span>
-                            </div>
-
-                            <!-- Jenis Kelamin -->
-                            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
-                                <span class="block text-[10px] uppercase font-extrabold text-slate-500">Jenis Kelamin</span>
-                                <span class="text-xs font-bold text-slate-800">
-                                    {{ ['L', 'M'].includes(participant.gender) ? 'Laki-laki (L)' : (['P', 'F'].includes(participant.gender) ? 'Perempuan (P)' : (participant.gender || '-')) }}
-                                </span>
-                            </div>
-
-                            <!-- NIK / ID Card -->
-                            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 sm:col-span-2">
-                                <div class="flex items-center justify-between">
-                                    <span class="block text-[10px] uppercase font-extrabold text-slate-500">Nomor KTP / SIM (NIK)</span>
-                                    <span class="text-[9px] bg-blue-100 text-[#0B2A8A] font-bold px-1.5 py-0.2 rounded font-mono">id_card_number</span>
+                                <div class="text-2xl font-black text-amber-950 font-mono tracking-wide mt-1">
+                                    {{ participant.jersey_size || '-' }}
                                 </div>
-                                <span class="text-sm font-extrabold text-slate-900 font-mono">{{ participant.id_card_number || '-' }}</span>
                             </div>
 
-                            <!-- No HP -->
-                            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
-                                <div class="flex items-center justify-between">
-                                    <span class="block text-[10px] uppercase font-bold text-slate-500">No. HP / WA</span>
-                                    <span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2 rounded font-mono">phone</span>
+                            <!-- 2. Nomor HP / WhatsApp -->
+                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col justify-between">
+                                <span class="block text-[10px] uppercase font-extrabold text-slate-500 tracking-wider font-heading mb-1">📱 Nomor HP / WA</span>
+                                <div class="text-base font-extrabold text-slate-900 font-mono mt-1">
+                                    {{ participant.phone || '-' }}
                                 </div>
-                                <span class="text-xs font-semibold text-slate-800 font-mono">{{ participant.phone || '-' }}</span>
                             </div>
 
-                            <!-- Email & PIN -->
-                            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 col-span-2 sm:col-span-3 flex justify-between items-center">
-                                <div>
-                                    <span class="block text-[10px] uppercase font-bold text-slate-500">Email Peserta</span>
-                                    <span class="text-xs font-semibold text-slate-800 font-mono truncate max-w-[200px] block">{{ participant.email || '-' }}</span>
-                                </div>
-                                <div class="text-right">
-                                    <span class="block text-[10px] uppercase font-bold text-slate-500">Kode PIN Struk</span>
-                                    <span class="text-xs font-bold text-[#0E7BDC] font-mono tracking-wider">{{ participant.pin_code }}</span>
+                            <!-- 3. Alamat Email -->
+                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col justify-between">
+                                <span class="block text-[10px] uppercase font-extrabold text-slate-500 tracking-wider font-heading mb-1">✉️ Alamat Email</span>
+                                <div class="text-sm font-bold text-slate-800 font-mono truncate mt-1" :title="participant.email">
+                                    {{ participant.email || '-' }}
                                 </div>
                             </div>
                         </div>
