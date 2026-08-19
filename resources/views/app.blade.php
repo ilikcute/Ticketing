@@ -6,6 +6,9 @@
 
         <title inertia>{{ config('app.name', 'RacePack Pro') }}</title>
 
+        <!-- CSRF Token -->
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+
         <!-- Favicon -->
         <link rel="icon" type="image/png" href="/images/logo-indomaret-funrun.png" />
         <link rel="shortcut icon" type="image/png" href="/images/logo-indomaret-funrun.png" />

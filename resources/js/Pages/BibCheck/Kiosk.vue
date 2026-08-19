@@ -305,7 +305,7 @@ async function submitEditName() {
                 class="w-36 shrink-0 flex items-center justify-end transition duration-300 hover:scale-105 sm:w-48 md:w-56 drop-shadow-[0_12px_20px_rgba(0,0,0,0.18)]"
             >
                 <img
-                    src="/images/logo-sponsor-indomaret.png"
+                    src="/images/logo-indomaret.png"
                     alt="Indomaret"
                     class="w-auto max-h-18 object-contain sm:max-h-22 md:max-h-28 lg:max-h-32"
                 />
