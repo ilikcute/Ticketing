@@ -30,8 +30,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// --- Publik: kiosk BIB Check (tanpa login, read-only) ---
+// --- Publik: kiosk BIB Check (tanpa login) ---
 Route::get('/bib-check', [BibCheckController::class, 'index'])->name('bib-check.index');
+Route::post('/bib-check/update-name', [BibCheckController::class, 'updateBibName'])->name('bib-check.update-name');
 Route::get('/bib-check/{code}', [BibCheckController::class, 'check'])->name('bib-check.check');
 
 // --- Modul aplikasi kita, wajib login ---
@@ -43,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/lookup/{pinCode?}', [LoketController::class, 'lookup'])->name('lookup');
         Route::post('/assign', [LoketController::class, 'assign'])->name('assign');
         Route::post('/reset-claim', [LoketController::class, 'resetClaim'])->name('reset-claim');
+        Route::post('/update-bib-name', [LoketController::class, 'updateBibName'])->name('update-bib-name');
     });
 
     // Modul Import & User Management — role: admin

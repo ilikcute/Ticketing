@@ -200,4 +200,29 @@ class LoketController extends Controller
 
         return back()->with('success', "Sengketa/Reset Claim PIN {$participant->pin_code} BERHASIL! Status peserta {$participant->full_name} dikembalikan ke SIAP ASSIGN.");
     }
+
+    /**
+     * Update Nama Tampil di BIB dari Loket POS
+     */
+    public function updateBibName(Request $request)
+    {
+        $request->validate([
+            'pin_code' => ['required', 'string'],
+            'bib_name' => ['required', 'string', 'max:100'],
+        ]);
+
+        $participant = Participant::where('pin_code', $request->string('pin_code')->toString())
+            ->orWhere('id', $request->input('id'))
+            ->firstOrFail();
+
+        $participant->update([
+            'bib_name' => trim($request->string('bib_name')->toString()),
+        ]);
+
+        return response()->json([
+            'message' => 'Nama Tampil di BIB berhasil diperbarui!',
+            'bib_name' => $participant->bib_name,
+            'full_name' => $participant->full_name,
+        ]);
+    }
 }

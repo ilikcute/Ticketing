@@ -10,13 +10,23 @@ const code = ref("");
 const input = ref(null);
 const result = ref(null);
 const errorMessage = ref("");
+const successMessage = ref("");
 const loading = ref(false);
 const autoResetEnabled = ref(false); // Default nonaktif agar peserta bisa foto & upload sosmed
 const autoResetSeconds = ref(15);
 let autoResetTimer = null;
 
+// State Modal Edit Nama BIB
+const showEditModal = ref(false);
+const editingBibName = ref("");
+const editSubmitting = ref(false);
+const editError = ref("");
+const editInputRef = ref(null);
+
 function focusInput() {
-    nextTick(() => input.value?.focus());
+    if (!showEditModal.value) {
+        nextTick(() => input.value?.focus());
+    }
 }
 
 onMounted(() => {
@@ -33,6 +43,7 @@ async function handleScan() {
 
     loading.value = true;
     errorMessage.value = "";
+    successMessage.value = "";
     result.value = null;
 
     if (autoResetTimer) {
@@ -74,6 +85,8 @@ function resetToIdle() {
     if (autoResetTimer) clearTimeout(autoResetTimer);
     result.value = null;
     errorMessage.value = "";
+    successMessage.value = "";
+    showEditModal.value = false;
     focusInput();
 }
 
@@ -82,6 +95,63 @@ function toggleAutoReset() {
     if (!autoResetEnabled.value && autoResetTimer) {
         clearTimeout(autoResetTimer);
         autoResetTimer = null;
+    }
+}
+
+// Fungsi Buka Modal Edit Nama BIB
+function openEditNameModal() {
+    if (!result.value) return;
+    if (autoResetTimer) {
+        clearTimeout(autoResetTimer);
+        autoResetTimer = null;
+    }
+    editingBibName.value = result.value.bib_name || result.value.full_name || "";
+    editError.value = "";
+    showEditModal.value = true;
+    nextTick(() => editInputRef.value?.focus());
+}
+
+// Fungsi Simpan Perubahan Nama BIB
+async function submitEditName() {
+    const newName = editingBibName.value.trim();
+    if (!newName) {
+        editError.value = "Nama tidak boleh kosong.";
+        return;
+    }
+
+    editSubmitting.value = true;
+    editError.value = "";
+
+    try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        const res = await fetch('/bib-check/update-name', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken || '',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+                code: result.value.pin_code || result.value.bib_number,
+                id: result.value.id,
+                bib_name: newName,
+            }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            editError.value = data.message || "Gagal menyimpan perubahan nama.";
+            return;
+        }
+
+        // Perbarui data lokal secara instan
+        result.value.bib_name = data.bib_name;
+        showEditModal.value = false;
+        successMessage.value = `Nama di BIB berhasil diubah menjadi "${data.bib_name}"!`;
+    } catch {
+        editError.value = "Terjadi kesalahan koneksi ke server.";
+    } finally {
+        editSubmitting.value = false;
     }
 }
 </script>
@@ -141,13 +211,6 @@ function toggleAutoReset() {
                 stroke-width="1.7"
                 filter="url(#softGlow)"
             />
-            <path
-                d="M 0 760 C 180 690, 360 860, 560 790 S 920 700, 1120 800 S 1400 850, 1600 760"
-                fill="none"
-                stroke="rgba(255,255,255,0.16)"
-                stroke-width="1.4"
-                filter="url(#softGlow)"
-            />
         </svg>
 
         <div
@@ -178,13 +241,6 @@ function toggleAutoReset() {
         ></div>
         <div
             class="pointer-events-none absolute right-0 bottom-0 z-0 h-[460px] w-[460px] rounded-full bg-white/8 blur-3xl"
-        ></div>
-
-        <div
-            class="pointer-events-none absolute right-6 top-1/2 z-0 h-4 w-4 -translate-y-1/2 rounded-full border border-white/20 bg-white/20 shadow-[0_0_18px_rgba(255,255,255,0.35)]"
-        ></div>
-        <div
-            class="pointer-events-none absolute bottom-24 right-10 z-0 h-3.5 w-3.5 rounded-full border border-white/20 bg-white/20 shadow-[0_0_14px_rgba(255,255,255,0.35)]"
         ></div>
 
         <!-- Staff controls -->
@@ -221,7 +277,7 @@ function toggleAutoReset() {
             </button>
         </div>
 
-        <!-- Header (Fluid Scaling) -->
+        <!-- Header -->
         <header
             class="relative z-10 mx-auto flex w-full max-w-7xl items-start justify-between gap-2 pt-2 sm:pt-3"
         >
@@ -249,52 +305,64 @@ function toggleAutoReset() {
                 class="w-36 shrink-0 flex items-center justify-end transition duration-300 hover:scale-105 sm:w-48 md:w-56 drop-shadow-[0_12px_20px_rgba(0,0,0,0.18)]"
             >
                 <img
-                    src="/images/logo-indomaret.png"
-                    alt="Indomaret Official Logo"
-                    class="w-auto object-contain max-h-12 rounded-md sm:max-h-16 sm:rounded-lg md:max-h-18 lg:max-h-20"
+                    src="/images/logo-sponsor-indomaret.png"
+                    alt="Indomaret"
+                    class="w-auto max-h-18 object-contain sm:max-h-22 md:max-h-28 lg:max-h-32"
                 />
             </div>
         </header>
 
-        <!-- Main (Sensitif Terhadap Tinggi Layar Windowed & Fullscreen) -->
+        <!-- Main Display Content -->
         <main
-            class="relative z-10 mx-auto flex w-full max-w-2xl flex-1 flex-col items-center justify-center px-2 my-auto -mt-2 sm:-mt-4 md:-mt-6"
+            class="relative z-10 mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center py-2 sm:py-3"
         >
-            <div v-if="loading" class="py-6 text-center animate-pulse">
+            <!-- Toast Flash Sukses -->
+            <div
+                v-if="successMessage"
+                class="mb-3 rounded-full bg-emerald-500 px-6 py-2 text-xs sm:text-sm font-bold text-white shadow-xl flex items-center gap-2 animate-bounce"
+            >
+                <span>✅</span>
+                <span>{{ successMessage }}</span>
+            </div>
+
+            <!-- Loading State -->
+            <div v-if="loading" class="my-auto space-y-3 text-center">
                 <div
-                    class="mx-auto mb-3 h-14 w-14 animate-spin rounded-full border-4 border-[#FFD400] border-t-transparent"
+                    class="mx-auto h-16 w-16 animate-spin rounded-full border-4 border-white/20 border-t-[#FFCC00]"
                 ></div>
-                <p class="text-lg font-extrabold tracking-wider text-[#FFD400]">
-                    🔍 MENCARI DATA PESERTA...
+                <p
+                    class="text-sm font-semibold tracking-wider text-white/90 sm:text-base"
+                >
+                    Mencari data peserta...
                 </p>
             </div>
 
+            <!-- Error State -->
             <div
                 v-else-if="errorMessage"
-                class="w-full max-w-md space-y-3 rounded-3xl border-4 border-white/20 bg-red-600 p-5 text-center text-white shadow-2xl animate-[fadeInUp_0.3s_ease-out]"
+                class="my-auto w-full max-w-xl space-y-3 rounded-3xl border border-white/30 bg-rose-500/20 p-5 text-center shadow-2xl backdrop-blur-xl animate-shake"
             >
-                <div class="text-xl font-extrabold">
-                    ⚠️ DATA TIDAK DITEMUKAN
-                </div>
-                <p class="text-xs font-semibold leading-relaxed">
+                <div class="text-4xl">⚠️</div>
+                <h3 class="text-lg font-black text-white sm:text-xl">
                     {{ errorMessage }}
-                </p>
-                <p class="text-xs font-extrabold text-[#FFD400]">
-                    📞 Silakan hubungi Panitia / Petugas Loket untuk memastikan
-                    Nomor BIB Anda.
+                </h3>
+                <p class="text-xs text-white/80">
+                    Pastikan nomor BIB atau PIN struk yang diinput sudah benar.
                 </p>
                 <button
                     @click="resetToIdle"
-                    class="mt-1 rounded-full bg-[#FFD400] px-6 py-2 text-xs font-extrabold uppercase tracking-wider text-[#0B2A8A] shadow-lg transition hover:scale-105"
+                    class="mt-2 rounded-full bg-white px-6 py-2 text-xs font-black uppercase text-[#0B2A8A] shadow-lg transition hover:bg-yellow-300"
                 >
                     Coba Lagi
                 </button>
             </div>
 
+            <!-- Result State -->
             <div
                 v-else-if="result"
                 class="w-full space-y-2.5 animate-[fadeInUp_0.4s_ease-out]"
             >
+                <!-- Nomor BIB Display -->
                 <div
                     class="relative overflow-hidden rounded-[24px] border-4 border-[#0B34AA]/20 bg-white p-3.5 text-center text-[#0B2A8A] shadow-2xl sm:p-5"
                 >
@@ -320,24 +388,46 @@ function toggleAutoReset() {
                     </div>
                 </div>
 
+                <!-- Kartu Identitas Peserta / BIB (Dengan Fitur Edit Nama) -->
                 <div
-                    class="rounded-[24px] border-4 border-[#0B34AA]/20 bg-white p-3.5 text-center text-[#0B2A8A] shadow-2xl sm:p-4"
+                    class="rounded-[24px] border-4 border-[#0B34AA]/20 bg-white p-3.5 text-center text-[#0B2A8A] shadow-2xl sm:p-4 relative group"
                 >
                     <div class="mb-0.5 flex items-center justify-center gap-2">
                         <span class="h-0.5 w-6 bg-[#FFD400] sm:w-8"></span>
                         <span
                             class="text-xs font-extrabold uppercase tracking-[0.28em] text-slate-500 sm:text-sm"
-                            >NAMA PESERTA / BIB</span
+                            >NAMA TAMPIL DI BIB</span
                         >
                         <span class="h-0.5 w-6 bg-[#FFD400] sm:w-8"></span>
                     </div>
 
-                    <div
-                        class="my-0.5 truncate text-xl font-extrabold tracking-tight text-[#0B2A8A] sm:text-2xl md:text-3xl font-heading"
-                    >
-                        {{ result.bib_name || result.full_name || "—" }}
+                    <!-- Nama Tampil di BIB & Tombol Edit -->
+                    <div class="flex items-center justify-center gap-2 my-0.5">
+                        <div
+                            class="truncate text-xl font-extrabold tracking-tight text-[#0B2A8A] sm:text-2xl md:text-3xl font-heading"
+                        >
+                            {{ result.bib_name || result.full_name || "—" }}
+                        </div>
+                        <button
+                            @click.stop="openEditNameModal"
+                            class="p-1.5 rounded-full bg-yellow-100 hover:bg-[#FFD400] text-[#0B2A8A] border border-yellow-300 shadow-sm transition hover:scale-110 shrink-0"
+                            title="Edit / Sesuaikan Nama Tampil di BIB"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                            </svg>
+                        </button>
                     </div>
 
+                    <!-- Subtext Info Jika Beda Dengan Pembeli Asli -->
+                    <div
+                        v-if="result.full_name && result.bib_name && result.bib_name !== result.full_name"
+                        class="text-xs text-slate-500 font-semibold mb-1"
+                    >
+                        Pembeli / Pemesan: <strong class="text-slate-800">{{ result.full_name }}</strong>
+                    </div>
+
+                    <!-- Badges -->
                     <div class="mt-1 flex items-center justify-center gap-2 flex-wrap text-xs font-bold uppercase tracking-wider">
                         <span v-if="result?.category" class="px-2.5 py-0.5 rounded-full bg-blue-50 text-[#0B2A8A] border border-blue-200">
                             {{ result.category }}
@@ -348,6 +438,12 @@ function toggleAutoReset() {
                         <span v-if="result?.gender" class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
                             {{ ['L', 'M'].includes(result.gender) ? 'Pria' : (['P', 'F'].includes(result.gender) ? 'Wanita' : result.gender) }}
                         </span>
+                        <button
+                            @click.stop="openEditNameModal"
+                            class="px-2.5 py-0.5 rounded-full bg-[#0E7BDC] hover:bg-blue-600 text-white font-extrabold text-[10px] shadow-sm transition flex items-center gap-1"
+                        >
+                            <span>✏️ Ubah Nama BIB</span>
+                        </button>
                     </div>
                 </div>
 
@@ -361,6 +457,7 @@ function toggleAutoReset() {
                 </div>
             </div>
 
+            <!-- State Awal / Idle -->
             <div v-else class="my-auto space-y-3 text-center">
                 <div
                     class="inline-block rounded-full border-4 border-white bg-[#FFCC00] px-14 py-2.5 text-3xl font-black tracking-[0.22em] text-[#2C2C2C] shadow-[0_16px_35px_rgba(0,0,0,0.18),0_0_35px_rgba(255,255,255,0.22)] transition duration-300 hover:scale-105 sm:text-4xl md:text-[3.35rem]"
@@ -376,7 +473,7 @@ function toggleAutoReset() {
                 <p
                     class="text-xs font-medium tracking-[0.18em] text-white/82 sm:text-sm"
                 >
-                    Silakan ketik nomor BIB di bawah
+                    Silakan ketik nomor BIB atau scan barcode di bawah
                 </p>
             </div>
         </main>
@@ -454,61 +551,131 @@ function toggleAutoReset() {
                 </div>
             </div>
         </footer>
+
+        <!-- ========================================= -->
+        <!-- MODAL EDIT NAMA TAMPIL DI BIB             -->
+        <!-- ========================================= -->
+        <div
+            v-if="showEditModal"
+            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in"
+            @click.stop
+        >
+            <div
+                class="bg-slate-900 border-2 border-slate-700 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 text-slate-900"
+                @click.stop
+            >
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <div class="flex items-center gap-2 text-yellow-400">
+                        <span class="text-xl">✏️</span>
+                        <h3 class="font-extrabold text-base text-white font-heading">
+                            Ubah Nama Tampil di BIB
+                        </h3>
+                    </div>
+                    <button
+                        @click="showEditModal = false"
+                        class="text-slate-400 hover:text-white font-bold text-sm"
+                    >
+                        ✕
+                    </button>
+                </div>
+
+                <div
+                    v-if="editError"
+                    class="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-bold"
+                >
+                    ⚠️ {{ editError }}
+                </div>
+
+                <div class="text-xs text-slate-300 leading-relaxed">
+                    Tiket ini terdaftar atas pembelian pool / kolektif. Masukkan <strong>Nama Pelari</strong> yang sebenarnya yang akan dicetak/tampil pada nomor BIB:
+                </div>
+
+                <form @submit.prevent="submitEditName" class="space-y-3.5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase mb-1">
+                            Nama Tampil di BIB (Runner Name)
+                        </label>
+                        <input
+                            ref="editInputRef"
+                            v-model="editingBibName"
+                            type="text"
+                            required
+                            placeholder="Ketik nama pelari..."
+                            class="w-full bg-slate-950 border-2 border-slate-700 focus:border-[#FFD400] text-white rounded-xl px-4 py-2.5 text-base font-bold focus:outline-none focus:ring-2 focus:ring-yellow-400/30 font-heading uppercase"
+                        />
+                    </div>
+
+                    <div class="flex gap-2 pt-2">
+                        <button
+                            type="submit"
+                            :disabled="editSubmitting || !editingBibName.trim()"
+                            class="flex-1 py-3 px-4 bg-[#FFD400] hover:bg-yellow-400 text-[#0B2A8A] font-black text-xs uppercase tracking-wider rounded-xl shadow-lg disabled:opacity-40 transition font-heading"
+                        >
+                            {{ editSubmitting ? 'Menyimpan...' : '✓ Simpan Nama Baru' }}
+                        </button>
+
+                        <button
+                            type="button"
+                            @click="showEditModal = false"
+                            class="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl border border-slate-700 transition"
+                        >
+                            Batal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </template>
 
 <style>
 @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@800;900&family=Outfit:wght@700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap");
 
-:root {
-    color-scheme: only light;
+.font-bib {
+    font-family: "JetBrains Mono", monospace;
 }
 
 .font-heading {
-    font-family: "Outfit", "Plus Jakarta Sans", sans-serif;
-    font-weight: 800;
+    font-family: "Outfit", sans-serif;
 }
 
-.font-bib {
-    font-family: "JetBrains Mono", "Impact", monospace;
-    letter-spacing: 0.04em;
-    font-weight: 900;
+.font-sans {
+    font-family: "Plus Jakarta Sans", sans-serif;
 }
 
-* {
-    font-family:
-        "Plus Jakarta Sans",
-        system-ui,
-        -apple-system,
-        sans-serif;
+.glass-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+@keyframes shake {
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+    20%,
+    60% {
+        transform: translateX(-6px);
+    }
+    40%,
+    80% {
+        transform: translateX(6px);
+    }
+}
+
+.animate-shake {
+    animation: shake 0.5s ease-in-out;
 }
 
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(20px) scale(0.96);
+        transform: translateY(12px);
     }
     to {
         opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes shimmer {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
-@media (max-width: 640px) {
-    .font-bib {
-        letter-spacing: 0.02em;
+        transform: translateY(0);
     }
 }
 </style>

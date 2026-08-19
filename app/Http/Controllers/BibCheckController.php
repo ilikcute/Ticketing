@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BibCheckLog;
 use App\Models\Event;
 use App\Models\Participant;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -12,7 +13,6 @@ class BibCheckController extends Controller
 {
     /**
      * Halaman kiosk publik, tanpa login (FR-12 s.d. FR-16 di BRD).
-     * Read-only: tidak ada perubahan data peserta dari endpoint ini.
      */
     public function index(): Response
     {
@@ -66,6 +66,8 @@ class BibCheckController extends Controller
         $isClaimed = !empty($participant->bib_number) || $participant->status->value !== 'unclaimed';
 
         return response()->json([
+            'id' => $participant->id,
+            'pin_code' => $participant->pin_code,
             'full_name' => $participant->full_name,
             'bib_name' => $participant->bib_name ?: $participant->full_name,
             'jersey_size' => $participant->jersey_size ?? '-',
@@ -75,6 +77,39 @@ class BibCheckController extends Controller
             'status' => $participant->status->value,
             'is_claimed' => $isClaimed,
             'status_label' => $isClaimed ? 'RACEPACK SUDAH DIAMBIL' : 'RACEPACK BELUM DIAMBIL',
+        ]);
+    }
+
+    /**
+     * Memperbarui Nama Tampil di BIB jika 1 pembeli membeli banyak tiket secara kolektif.
+     */
+    public function updateBibName(Request $request)
+    {
+        $request->validate([
+            'code' => ['required', 'string'],
+            'bib_name' => ['required', 'string', 'max:100'],
+        ]);
+
+        $code = trim($request->string('code')->toString());
+        $newBibName = trim($request->string('bib_name')->toString());
+
+        $participant = Participant::where('pin_code', $code)
+            ->orWhere('bib_number', $code)
+            ->orWhere('id', $request->input('id'))
+            ->first();
+
+        if (!$participant) {
+            return response()->json(['message' => 'Data peserta tidak ditemukan.'], 404);
+        }
+
+        $participant->update([
+            'bib_name' => $newBibName,
+        ]);
+
+        return response()->json([
+            'message' => 'Nama Tampil di BIB berhasil diperbarui!',
+            'bib_name' => $participant->bib_name,
+            'full_name' => $participant->full_name,
         ]);
     }
 }

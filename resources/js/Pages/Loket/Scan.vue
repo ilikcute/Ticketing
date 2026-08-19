@@ -178,7 +178,63 @@ function resetForm() {
     identityConfirmed.value = true;
     errorMessage.value = '';
     showResetModal.value = false;
+    showEditBibNameModal.value = false;
     focusInput();
+}
+
+// State & fungsi Edit Nama Tampil di BIB (Loket Desk)
+const showEditBibNameModal = ref(false);
+const editBibNameVal = ref('');
+const editBibNameSubmitting = ref(false);
+const editBibNameError = ref('');
+
+function openEditBibNameModal() {
+    if (!participant.value) return;
+    editBibNameVal.value = participant.value.bib_name || participant.value.full_name || '';
+    editBibNameError.value = '';
+    showEditBibNameModal.value = true;
+}
+
+async function submitUpdateBibName() {
+    const newName = editBibNameVal.value.trim();
+    if (!newName) {
+        editBibNameError.value = 'Nama tidak boleh kosong.';
+        return;
+    }
+
+    editBibNameSubmitting.value = true;
+    editBibNameError.value = '';
+
+    try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        const res = await fetch('/loket/update-bib-name', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken || '',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+                pin_code: participant.value.pin_code,
+                id: participant.value.id,
+                bib_name: newName,
+            }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            editBibNameError.value = data.message || 'Gagal mengubah nama di BIB.';
+            return;
+        }
+
+        participant.value.bib_name = data.bib_name;
+        showEditBibNameModal.value = false;
+        successFlash.value = `NAMA DI BIB BERHASIL DIUBAH: "${data.bib_name}"`;
+    } catch {
+        editBibNameError.value = 'Terjadi gangguan jaringan saat menyimpan perubahan nama.';
+    } finally {
+        editBibNameSubmitting.value = false;
+    }
 }
 </script>
 
@@ -446,12 +502,22 @@ function resetForm() {
                                         {{ (participant.bib_name || participant.full_name).charAt(0) }}
                                     </div>
                                     <div>
-                                        <div class="text-[10px] font-extrabold uppercase tracking-wider text-[#0E7BDC] font-heading">
-                                            Identitas Peserta Terverifikasi
+                                        <div class="text-[10px] font-extrabold uppercase tracking-wider text-[#0E7BDC] font-heading flex items-center gap-2">
+                                            <span>Identitas Peserta Terverifikasi</span>
+                                            <button
+                                                @click="openEditBibNameModal"
+                                                class="px-2 py-0.5 rounded-full bg-yellow-100 hover:bg-[#FFD400] text-[#0B2A8A] border border-yellow-300 font-extrabold text-[10px] transition flex items-center gap-1 shadow-xs"
+                                                title="Edit Nama Tampil di BIB"
+                                            >
+                                                <span>✏️</span>
+                                                <span>Ubah Nama BIB</span>
+                                            </button>
                                         </div>
-                                        <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight font-heading mt-0.5">
-                                            {{ participant.bib_name || participant.full_name }}
-                                        </h3>
+                                        <div class="flex items-center gap-2 mt-0.5">
+                                            <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight font-heading">
+                                                {{ participant.bib_name || participant.full_name }}
+                                            </h3>
+                                        </div>
                                         <div v-if="participant.bib_name && participant.full_name && participant.bib_name !== participant.full_name" class="text-xs text-slate-500 font-semibold mt-0.5">
                                             Pemesan / Pembeli Tiket: <strong class="text-slate-800">{{ participant.full_name }}</strong>
                                         </div>
@@ -587,6 +653,69 @@ function resetForm() {
                         <button
                             type="button"
                             @click="showResetModal = false"
+                            class="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl border border-slate-700 transition"
+                        >
+                            Batal
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+        <!-- ========================================= -->
+        <!-- MODAL EDIT NAMA TAMPIL DI BIB (LOKET)     -->
+        <!-- ========================================= -->
+        <div v-if="showEditBibNameModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+            <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 text-slate-900">
+                
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <div class="flex items-center gap-2 text-[#FFD400]">
+                        <span class="text-xl">✏️</span>
+                        <h3 class="font-extrabold text-base text-white font-heading">Ubah Nama Tampil di BIB</h3>
+                    </div>
+                    <button @click="showEditBibNameModal = false" class="text-slate-400 hover:text-white font-bold text-sm">✕</button>
+                </div>
+
+                <div v-if="editBibNameError" class="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-bold">
+                    ⚠️ {{ editBibNameError }}
+                </div>
+
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs space-y-1">
+                    <div class="text-slate-400 font-bold uppercase text-[10px]">Data Pembeli Tiket:</div>
+                    <div class="text-white font-extrabold text-sm">{{ participant?.full_name }}</div>
+                    <div class="text-slate-300 font-mono">PIN: {{ participant?.pin_code }} &bull; Jersey: {{ participant?.jersey_size || '-' }}</div>
+                </div>
+
+                <p class="text-xs text-slate-300 leading-relaxed">
+                    Untuk pembelian tiket kolektif/pool 1 nama, ubah <strong>Nama Pelari</strong> di bawah agar tercetak/tampil sesuai nama pemilik BIB:
+                </p>
+
+                <form @submit.prevent="submitUpdateBibName" class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Nama Tampil di BIB (Runner Name)</label>
+                        <input
+                            v-model="editBibNameVal"
+                            type="text"
+                            required
+                            autofocus
+                            placeholder="Ketik nama pelari..."
+                            class="w-full bg-slate-950 border border-slate-700 focus:border-[#FFD400] text-white rounded-xl px-4 py-2.5 text-base font-bold focus:outline-none focus:ring-2 focus:ring-yellow-400/30 uppercase font-heading"
+                        />
+                    </div>
+
+                    <div class="flex gap-2 pt-2">
+                        <button
+                            type="submit"
+                            :disabled="editBibNameSubmitting || !editBibNameVal.trim()"
+                            class="flex-1 py-3 px-4 bg-[#FFD400] hover:bg-yellow-400 text-[#0B2A8A] font-black text-xs uppercase tracking-wider rounded-xl shadow-lg disabled:opacity-40 transition font-heading"
+                        >
+                            {{ editBibNameSubmitting ? 'Menyimpan...' : '✓ Simpan Nama Baru' }}
+                        </button>
+
+                        <button
+                            type="button"
+                            @click="showEditBibNameModal = false"
                             class="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl border border-slate-700 transition"
                         >
                             Batal
