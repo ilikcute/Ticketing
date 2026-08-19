@@ -302,7 +302,7 @@ onUnmounted(() => {
             </header>
 
             <!-- Main Content Area (Full Width) -->
-            <main class="w-full px-4 sm:px-6 lg:px-10 py-8 min-h-[calc(100vh-180px)]">
+            <main class="w-full px-4 sm:px-6 lg:px-10 py-3 sm:py-4 min-h-[calc(100vh-140px)]">
                 <slot />
             </main>
 
