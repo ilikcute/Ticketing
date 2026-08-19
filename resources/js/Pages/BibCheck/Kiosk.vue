@@ -383,17 +383,17 @@ async function submitEditName() {
                 v-else-if="result"
                 class="w-full space-y-2 animate-[fadeInUp_0.4s_ease-out]"
             >
-                <!-- KARTU BIB TUNGGAL (1 UNIFIED MARATHON RACE BIB CARD) -->
+                <!-- KARTU BIB TUNGGAL (1 UNIFIED MARATHON RACE BIB CARD - INDOMARET BLUE & YELLOW THEME) -->
                 <div
                     class="w-full bg-white rounded-3xl sm:rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.30)] border-4 border-white overflow-hidden relative select-all"
                 >
-                    <!-- Top Header Bar (Red Marathon Ribbon dengan 2 Lubang Peniti) -->
+                    <!-- Top Header Bar (Indomaret Blue Ribbon dengan 2 Lubang Peniti) -->
                     <div
-                        class="relative bg-gradient-to-r from-[#E31B23] via-[#E31B23] to-[#D0151D] text-white py-2 sm:py-2.5 px-5 sm:px-8 flex items-center justify-between shadow-sm"
+                        class="relative bg-gradient-to-r from-[#0B2A8A] via-[#0E7BDC] to-[#0B2A8A] text-white py-2 sm:py-2.5 px-5 sm:px-8 flex items-center justify-between shadow-md"
                     >
                         <!-- Lubang Peniti Kiri Atas -->
                         <div
-                            class="w-4 h-4 sm:w-6 sm:h-6 rounded-full bg-slate-100/90 border-2 border-slate-300 shadow-inner shrink-0"
+                            class="w-4 h-4 sm:w-6 sm:h-6 rounded-full bg-slate-100/90 border-2 border-white/60 shadow-inner shrink-0"
                         ></div>
 
                         <!-- Header Event Title -->
@@ -404,7 +404,7 @@ async function submitEditName() {
                                 {{ event?.name || "INDOMARET FUN RUN 2026" }}
                             </h2>
                             <div
-                                class="text-[9px] sm:text-[11px] font-bold uppercase tracking-wider text-yellow-200"
+                                class="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-wider text-[#FFD400]"
                             >
                                 {{ event?.date || "30 AGUSTUS 2026" }} &bull;
                                 {{ event?.location || "YOGYAKARTA" }}
@@ -413,7 +413,7 @@ async function submitEditName() {
 
                         <!-- Lubang Peniti Kanan Atas -->
                         <div
-                            class="w-4 h-4 sm:w-6 sm:h-6 rounded-full bg-slate-100/90 border-2 border-slate-300 shadow-inner shrink-0"
+                            class="w-4 h-4 sm:w-6 sm:h-6 rounded-full bg-slate-100/90 border-2 border-white/60 shadow-inner shrink-0"
                         ></div>
                     </div>
 
@@ -461,7 +461,7 @@ async function submitEditName() {
                             class="flex items-center justify-center gap-2 sm:gap-2.5 flex-wrap pt-1"
                         >
                             <span
-                                class="px-3 py-0.5 rounded-full bg-blue-50 text-[#0B2A8A] border-2 border-blue-200 font-black text-xs uppercase tracking-wider font-heading shadow-xs"
+                                class="px-3 py-0.5 rounded-full bg-blue-50 text-[#0B2A8A] border-2 border-[#0B2A8A]/30 font-black text-xs uppercase tracking-wider font-heading shadow-xs"
                             >
                                 {{ result.category || "5K FUN RUN" }}
                             </span>
@@ -489,13 +489,13 @@ async function submitEditName() {
                         </div>
                     </div>
 
-                    <!-- Bottom Footer Bar (Black / Dark Navy Timing Bar dengan 2 Lubang Peniti) -->
+                    <!-- Bottom Footer Bar (Indomaret Yellow Ribbon dengan 2 Lubang Peniti) -->
                     <div
-                        class="relative bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white py-2 sm:py-2.5 px-5 sm:px-8 flex items-center justify-between border-t-2 border-slate-200 shadow-inner"
+                        class="relative bg-gradient-to-r from-[#FFD400] via-[#FFE259] to-[#FFD400] text-[#0B2A8A] py-2 sm:py-2.5 px-5 sm:px-8 flex items-center justify-between border-t-2 border-yellow-300 shadow-sm"
                     >
                         <!-- Lubang Peniti Kiri Bawah -->
                         <div
-                            class="w-4 h-4 sm:w-6 sm:h-6 rounded-full bg-slate-100/90 border-2 border-slate-400 shadow-inner shrink-0"
+                            class="w-4 h-4 sm:w-6 sm:h-6 rounded-full bg-white/90 border-2 border-yellow-500/40 shadow-inner shrink-0"
                         ></div>
 
                         <!-- Timing Badges & Tombol Ubah Nama BIB -->
@@ -503,18 +503,18 @@ async function submitEditName() {
                             class="flex items-center justify-center gap-2 sm:gap-3 flex-wrap"
                         >
                             <span
-                                class="px-2.5 py-0.5 rounded bg-white/10 border border-white/20 text-yellow-300 font-black text-[10px] sm:text-xs tracking-wider uppercase font-mono"
+                                class="px-2.5 py-0.5 rounded bg-[#0B2A8A] text-white font-black text-[10px] sm:text-xs tracking-wider uppercase font-mono shadow-xs"
                             >
                                 Indomaret Fun Run
                             </span>
                             <span
-                                class="px-2.5 py-0.5 rounded bg-white/10 border border-white/20 text-sky-300 font-bold text-[10px] sm:text-xs tracking-wider uppercase font-mono"
+                                class="px-2.5 py-0.5 rounded bg-white text-[#0B2A8A] border border-[#0B2A8A]/20 font-bold text-[10px] sm:text-xs tracking-wider uppercase font-mono shadow-xs"
                             >
                                 BibTag Timing
                             </span>
                             <button
                                 @click.stop="openEditNameModal"
-                                class="px-3.5 py-1 rounded-full bg-[#FFD400] hover:bg-yellow-400 text-[#0B2A8A] font-black text-xs uppercase shadow-md transition flex items-center gap-1.5 font-heading hover:scale-105"
+                                class="px-3.5 py-1 rounded-full bg-[#0B2A8A] hover:bg-[#0E7BDC] text-white font-black text-xs uppercase shadow-md transition flex items-center gap-1.5 font-heading hover:scale-105"
                             >
                                 <span>✏️ Ubah Nama BIB</span>
                             </button>
@@ -522,7 +522,7 @@ async function submitEditName() {
 
                         <!-- Lubang Peniti Kanan Bawah -->
                         <div
-                            class="w-4 h-4 sm:w-6 sm:h-6 rounded-full bg-slate-100/90 border-2 border-slate-400 shadow-inner shrink-0"
+                            class="w-4 h-4 sm:w-6 sm:h-6 rounded-full bg-white/90 border-2 border-yellow-500/40 shadow-inner shrink-0"
                         ></div>
                     </div>
                 </div>
