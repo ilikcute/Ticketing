@@ -39,22 +39,22 @@ const resetError = ref('');
 const resetSubmitting = ref(false);
 
 const searchTypePills = [
-    { key: 'all', label: 'Semua (Auto)', icon: '🔍' },
+    { key: 'all', label: 'Semua', icon: '🔍' },
     { key: 'pin', label: 'Kode PIN', icon: '🎫' },
-    { key: 'phone', label: 'No. Telp / WA', icon: '📱' },
-    { key: 'id_card', label: 'NIK / ID Card', icon: '🪪' },
+    { key: 'phone', label: 'No. HP', icon: '📱' },
+    { key: 'id_card', label: 'NIK KTP', icon: '🪪' },
 ];
 
 const dynamicPlaceholder = computed(() => {
     switch (searchType.value) {
         case 'pin':
-            return 'SCAN PIN ATAU INPUT KODE PIN...';
+            return 'Scan PIN / Ketik Kode PIN...';
         case 'phone':
-            return 'INPUT NOMOR TELEPON / WA PESERTA (CONTOH: 0812...)...';
+            return 'Ketik No. HP (0812...)...';
         case 'id_card':
-            return 'INPUT NIK / NO. KTP PESERTA (16 DIGIT)...';
+            return 'Ketik NIK KTP (16 digit)...';
         default:
-            return 'SCAN PIN / NO. HP (08xx) / NIK KTP (16 DIGIT)...';
+            return 'Scan PIN / No. HP / Nama...';
     }
 });
 
@@ -469,13 +469,15 @@ async function submitUpdateBibName() {
                         </button>
                     </div>
 
-                    <!-- Tips Petugas (Jika Idle) -->
-                    <div v-else-if="searchResults.length === 0 && !participant" class="p-3.5 sm:p-4 rounded-2xl sm:rounded-3xl bg-white/90 border-2 border-white text-slate-700 text-xs space-y-1.5 shadow-md">
-                        <div class="font-extrabold text-slate-900 font-heading text-xs">💡 Tips Pencarian:</div>
-                        <ul class="list-disc list-inside space-y-0.5 text-[11px] font-medium text-slate-600">
-                            <li><strong>Kode PIN:</strong> Scan barcode struk atau ketik PIN.</li>
-                            <li><strong>Nomor HP:</strong> Ketik nomor telepon peserta.</li>
-                            <li><strong>Nama:</strong> Ketik nama pelari atau pembeli tiket.</li>
+                    <!-- Tips Petugas (Jika Idle di Layar Desktop) -->
+                    <div v-else-if="searchResults.length === 0 && !participant" class="hidden lg:block p-4 rounded-3xl bg-white/95 border-2 border-white text-slate-700 text-xs space-y-2 shadow-xl">
+                        <div class="font-black text-slate-900 font-heading text-xs flex items-center gap-1.5">
+                            <span>💡</span> Tips Pencarian Peserta:
+                        </div>
+                        <ul class="list-disc list-inside space-y-1 text-[11px] font-medium text-slate-600">
+                            <li><strong>Kode PIN:</strong> Scan barcode struk atau ketik nomor PIN.</li>
+                            <li><strong>Nomor HP:</strong> Ketik nomor telepon WhatsApp peserta.</li>
+                            <li><strong>Nama / NIK:</strong> Ketik nama pelari atau NIK KTP.</li>
                         </ul>
                     </div>
                 </div>
@@ -579,20 +581,22 @@ async function submitUpdateBibName() {
                     </div>
 
                     <!-- State Menunggu / Multiple Results Hint -->
-                    <div v-else-if="searchResults.length > 0" class="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/20 text-center text-white space-y-2 h-full flex flex-col items-center justify-center">
+                    <div v-else-if="searchResults.length > 0" class="bg-white/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 border-2 border-white shadow-xl text-center text-slate-900 space-y-2 h-full flex flex-col items-center justify-center">
                         <div class="text-3xl sm:text-4xl">👥</div>
-                        <div class="text-base font-bold">Silakan Pilih Salah Satu Peserta</div>
-                        <p class="text-xs max-w-sm mx-auto text-white/80">
-                            Pencarian menghasilkan {{ searchResults.length }} peserta. Klik tombol <strong>Pilih Peserta Ini</strong> pada kolom sebelah kiri.
+                        <div class="text-base font-extrabold font-heading text-slate-900">Silakan Pilih Salah Satu Peserta</div>
+                        <p class="text-xs max-w-sm mx-auto text-slate-600">
+                            Pencarian menghasilkan {{ searchResults.length }} peserta. Klik tombol <strong>Pilih Peserta Ini</strong> pada kolom di atas.
                         </p>
                     </div>
 
                     <!-- State Idle (Menunggu Scan) -->
-                    <div v-else class="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/20 text-center text-white space-y-2 h-full flex flex-col items-center justify-center py-8">
-                        <div class="text-4xl sm:text-5xl drop-shadow-md">🏷️</div>
-                        <div class="text-base sm:text-lg font-black tracking-tight font-heading">POS Loket Siap</div>
-                        <p class="text-xs max-w-sm mx-auto text-white/90 font-medium leading-relaxed">
-                            Silakan posisikan barcode di depan scanner atau ketikkan kode PIN / No. Telepon / Nama pada kolom sebelah kiri.
+                    <div v-else class="bg-white/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-5 sm:p-8 border-2 border-white shadow-xl text-center text-slate-900 space-y-2.5 h-full flex flex-col items-center justify-center py-6 sm:py-8">
+                        <div class="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-200 text-[#0E7BDC] flex items-center justify-center mx-auto shadow-sm">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        </div>
+                        <div class="text-base sm:text-lg font-black tracking-tight font-heading text-slate-900">POS Loket Siap Melayani</div>
+                        <p class="text-xs max-w-sm mx-auto text-slate-600 font-medium leading-relaxed">
+                            Scan barcode struk peserta atau ketikkan kode PIN / No. Telepon / Nama pada kolom pencarian di atas.
                         </p>
                     </div>
                 </div>
