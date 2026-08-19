@@ -92,7 +92,9 @@ class LoketController extends Controller
                 // Partial matching if length is at least 3
                 if (strlen($term) >= 3) {
                     $q->orWhere('pin_code', 'like', "%{$term}%")
-                      ->orWhere('id_card_number', 'like', "%{$term}%");
+                      ->orWhere('id_card_number', 'like', "%{$term}%")
+                      ->orWhere('full_name', 'like', "%{$term}%")
+                      ->orWhere('bib_name', 'like', "%{$term}%");
                 }
             });
         }
@@ -140,10 +142,12 @@ class LoketController extends Controller
                     'id' => $p->id,
                     'pin_code' => $p->pin_code,
                     'full_name' => $p->full_name,
+                    'bib_name' => $p->bib_name ?: $p->full_name,
                     'id_card_number' => $p->id_card_number,
                     'phone' => $p->phone,
                     'category_name' => $p->category?->name ?? '-',
                     'gender' => $p->gender,
+                    'jersey_size' => $p->jersey_size,
                     'bib_number' => $p->bib_number,
                     'status' => $p->status->value,
                     'is_claimed' => $isClaimed,

@@ -100,8 +100,10 @@ class ImportParticipantsAction
                     'pin_code' => $pin,
                     'transaction_id' => $row['transaction_id'] ?? null,
                     'full_name' => $row['full_name'],
+                    'bib_name' => $row['bib_name'] ?? $row['full_name'],
                     'id_card_number' => $row['id_card_number'] ?? '-',
                     'gender' => $row['gender'] ?? null,
+                    'jersey_size' => $row['jersey_size'] ?? null,
                     'phone' => $row['phone'] ?? null,
                     'email' => $row['email'] ?? null,
                     'status' => ParticipantStatus::Unclaimed->value,
@@ -201,9 +203,11 @@ class ImportParticipantsAction
 
         Participant::whereKey($participantId)->update([
             'full_name' => $row['full_name'],
+            'bib_name' => $row['bib_name'] ?? $row['full_name'],
             'id_card_number' => $row['id_card_number'] ?? '-',
             'transaction_id' => $row['transaction_id'] ?? null,
             'gender' => $row['gender'] ?? null,
+            'jersey_size' => $row['jersey_size'] ?? null,
             'phone' => $row['phone'] ?? null,
             'email' => $row['email'] ?? null,
             'category_id' => $category ? $category->id : null,

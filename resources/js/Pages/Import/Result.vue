@@ -200,35 +200,46 @@ function formatDate(dateStr) {
                     <table class="w-full text-left text-xs text-slate-800">
                         <thead class="bg-slate-100 text-slate-700 uppercase text-[10px] tracking-wider font-extrabold border-b border-slate-200">
                             <tr>
-                                <th class="px-3.5 py-3">No. Baris</th>
-                                <th class="px-3.5 py-3">Kode PIN</th>
-                                <th class="px-3.5 py-3">Nama Peserta</th>
-                                <th class="px-3.5 py-3">No. HP / WA</th>
-                                <th class="px-3.5 py-3">No. Booking / Trx</th>
-                                <th class="px-3.5 py-3">Jenis Masalah</th>
-                                <th class="px-3.5 py-3">Keterangan</th>
+                                <th class="px-3 py-3">No. Baris</th>
+                                <th class="px-3 py-3">Kode PIN</th>
+                                <th class="px-3 py-3">Nama di BIB (Pelari)</th>
+                                <th class="px-3 py-3">Nama Pemesan</th>
+                                <th class="px-3 py-3">Jersey</th>
+                                <th class="px-3 py-3">No. HP / WA</th>
+                                <th class="px-3 py-3">No. Booking / Trx</th>
+                                <th class="px-3 py-3">Jenis Masalah</th>
+                                <th class="px-3 py-3">Keterangan</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 font-medium">
                             <tr v-for="err in filteredErrors" :key="err.id" class="hover:bg-slate-50 transition">
-                                <td class="px-3.5 py-3 font-mono font-bold text-slate-600">
+                                <td class="px-3 py-3 font-mono font-bold text-slate-600">
                                     {{ err.row_number > 0 ? '#' + err.row_number : '-' }}
                                 </td>
-                                <td class="px-3.5 py-3 font-mono font-black text-[#0B2A8A]">
+                                <td class="px-3 py-3 font-mono font-black text-[#0B2A8A]">
                                     <span class="px-2 py-1 rounded bg-blue-50 border border-blue-200">
                                         {{ err.pin_code }}
                                     </span>
                                 </td>
-                                <td class="px-3.5 py-3 font-extrabold text-slate-900">
+                                <td class="px-3 py-3 font-extrabold text-slate-900">
+                                    {{ err.bib_name || err.full_name }}
+                                </td>
+                                <td class="px-3 py-3 text-slate-600 font-semibold">
                                     {{ err.full_name }}
                                 </td>
-                                <td class="px-3.5 py-3 font-mono text-slate-600">
+                                <td class="px-3 py-3 font-mono font-bold">
+                                    <span v-if="err.jersey_size && err.jersey_size !== '-'" class="px-2 py-0.5 rounded bg-yellow-100 text-yellow-900 border border-yellow-300 text-[10px]">
+                                        {{ err.jersey_size }}
+                                    </span>
+                                    <span v-else class="text-slate-400">-</span>
+                                </td>
+                                <td class="px-3 py-3 font-mono text-slate-600">
                                     {{ err.phone }}
                                 </td>
-                                <td class="px-3.5 py-3 font-mono text-slate-600">
+                                <td class="px-3 py-3 font-mono text-slate-600">
                                     {{ err.transaction_id }}
                                 </td>
-                                <td class="px-3.5 py-3">
+                                <td class="px-3 py-3">
                                     <span
                                         :class="[
                                             'px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase border',
@@ -240,7 +251,7 @@ function formatDate(dateStr) {
                                         {{ err.reason_label || err.reason }}
                                     </span>
                                 </td>
-                                <td class="px-3.5 py-3 text-slate-600 text-[11px]">
+                                <td class="px-3 py-3 text-slate-600 text-[11px]">
                                     {{ err.message }}
                                 </td>
                             </tr>

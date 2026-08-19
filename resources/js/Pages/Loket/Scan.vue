@@ -317,9 +317,21 @@ function resetForm() {
                             >
                                 <div class="flex items-start justify-between gap-2">
                                     <div>
-                                        <div class="font-extrabold text-sm text-slate-900 font-heading leading-tight">{{ res.full_name }}</div>
-                                        <div class="text-[10px] font-extrabold text-[#0E7BDC] uppercase font-heading mt-0.5">
-                                            {{ res.category_name }} &bull; {{ res.gender === 'M' ? 'Pria (L)' : 'Wanita (P)' }}
+                                        <!-- Nama Tampil di BIB -->
+                                        <div class="font-extrabold text-sm text-slate-900 font-heading leading-tight">
+                                            {{ res.bib_name || res.full_name }}
+                                        </div>
+                                        <!-- Info Pembeli jika berbeda -->
+                                        <div v-if="res.bib_name && res.full_name && res.bib_name !== res.full_name" class="text-[10px] text-slate-500 font-semibold mt-0.5">
+                                            Pemesan: <strong class="text-slate-700">{{ res.full_name }}</strong>
+                                        </div>
+                                        <div class="text-[10px] font-extrabold text-[#0E7BDC] uppercase font-heading mt-0.5 flex items-center gap-1.5 flex-wrap">
+                                            <span>{{ res.category_name }}</span>
+                                            <span>&bull;</span>
+                                            <span>{{ ['L', 'M'].includes(res.gender) ? 'Pria (L)' : (['P', 'F'].includes(res.gender) ? 'Wanita (P)' : (res.gender || '-')) }}</span>
+                                            <span v-if="res.jersey_size" class="px-1.5 py-0.2 rounded bg-yellow-100 text-yellow-800 border border-yellow-300 font-black text-[9px]">
+                                                JERSEY: {{ res.jersey_size }}
+                                            </span>
                                         </div>
                                     </div>
                                     <span
@@ -416,6 +428,7 @@ function resetForm() {
                             <li><strong>Kode PIN:</strong> Scan barcode struk atau ketik kode PIN (contoh: <code>TIX-...</code>).</li>
                             <li><strong>Nomor HP (phone):</strong> Ketik nomor telepon peserta (contoh: <code>08123456789</code>).</li>
                             <li><strong>NIK (id_card_number):</strong> Ketik 16 digit nomor KTP/SIM peserta.</li>
+                            <li><strong>Nama:</strong> Ketik nama pelari atau nama pembeli tiket.</li>
                             <li>Tekan <kbd class="px-2 py-0.5 bg-slate-200 text-slate-800 rounded font-mono text-[10px] font-bold">ENTER</kbd> untuk pencarian instan.</li>
                         </ul>
                     </div>
@@ -446,47 +459,77 @@ function resetForm() {
                         <!-- Header Info Peserta -->
                         <div class="flex items-center justify-between border-b border-slate-200 pb-3">
                             <div class="flex items-center gap-3">
-                                <div class="w-11 h-11 rounded-2xl bg-blue-100 text-[#0B2A8A] font-black flex items-center justify-center text-xl font-heading">
-                                    {{ participant.full_name.charAt(0) }}
+                                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#0B2A8A] to-[#0E7BDC] text-white font-black flex items-center justify-center text-xl font-heading shadow-md">
+                                    {{ (participant.bib_name || participant.full_name).charAt(0) }}
                                 </div>
                                 <div>
-                                    <div class="text-[10px] font-extrabold uppercase tracking-wider text-[#0E7BDC] font-heading">Identitas Peserta Terdaftar</div>
-                                    <h3 class="text-2xl font-black text-slate-900 tracking-tight leading-tight font-heading">{{ participant.full_name }}</h3>
+                                    <div class="text-[10px] font-extrabold uppercase tracking-wider text-[#0E7BDC] font-heading flex items-center gap-2">
+                                        <span>Nama Tampil di BIB (Pelari)</span>
+                                        <span v-if="participant.jersey_size" class="px-2 py-0.5 rounded-full bg-[#FFD400] text-[#0B2A8A] font-black text-[10px] font-mono shadow-sm">
+                                            👕 UKURAN: {{ participant.jersey_size }}
+                                        </span>
+                                    </div>
+                                    <h3 class="text-2xl font-black text-slate-900 tracking-tight leading-tight font-heading">
+                                        {{ participant.bib_name || participant.full_name }}
+                                    </h3>
+                                    <div v-if="participant.bib_name && participant.full_name && participant.bib_name !== participant.full_name" class="text-xs text-slate-500 font-semibold mt-0.5">
+                                        Pemesan / Pembeli Tiket: <strong class="text-slate-800">{{ participant.full_name }}</strong>
+                                    </div>
                                 </div>
                             </div>
                             <span
                                 :class="isClaimed ? 'bg-amber-100 text-amber-800 border-amber-300' : 'bg-emerald-100 text-emerald-800 border-emerald-300'"
-                                class="px-3.5 py-1.5 rounded-full text-xs font-extrabold border"
+                                class="px-3.5 py-1.5 rounded-full text-xs font-extrabold border shrink-0"
                             >
                                 {{ isClaimed ? 'SUDAH DITUKAR' : 'SIAP ASSIGN' }}
                             </span>
                         </div>
 
                         <!-- Grid Identitas Peserta -->
-                        <div class="grid grid-cols-2 gap-3 text-xs">
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                            <!-- Kategori Lari -->
                             <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
                                 <span class="block text-[10px] uppercase font-extrabold text-slate-500">Kategori Lari</span>
                                 <span class="text-sm font-black text-[#0B2A8A] font-heading">{{ participant.category?.name || '-' }}</span>
                             </div>
+
+                            <!-- Ukuran Jersey -->
+                            <div class="bg-gradient-to-br from-yellow-50 to-amber-50 p-3 rounded-2xl border-2 border-yellow-300 shadow-sm">
+                                <div class="flex items-center justify-between">
+                                    <span class="block text-[10px] uppercase font-extrabold text-amber-800">👕 Ukuran Jersey</span>
+                                    <span class="text-[9px] bg-yellow-200 text-yellow-900 font-bold px-1.5 py-0.2 rounded font-mono">SERAHKAN</span>
+                                </div>
+                                <span class="text-base font-black text-amber-900 font-mono">{{ participant.jersey_size || '-' }}</span>
+                            </div>
+
+                            <!-- Jenis Kelamin -->
                             <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
+                                <span class="block text-[10px] uppercase font-extrabold text-slate-500">Jenis Kelamin</span>
+                                <span class="text-xs font-bold text-slate-800">
+                                    {{ ['L', 'M'].includes(participant.gender) ? 'Laki-laki (L)' : (['P', 'F'].includes(participant.gender) ? 'Perempuan (P)' : (participant.gender || '-')) }}
+                                </span>
+                            </div>
+
+                            <!-- NIK / ID Card -->
+                            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 sm:col-span-2">
                                 <div class="flex items-center justify-between">
                                     <span class="block text-[10px] uppercase font-extrabold text-slate-500">Nomor KTP / SIM (NIK)</span>
                                     <span class="text-[9px] bg-blue-100 text-[#0B2A8A] font-bold px-1.5 py-0.2 rounded font-mono">id_card_number</span>
                                 </div>
                                 <span class="text-sm font-extrabold text-slate-900 font-mono">{{ participant.id_card_number || '-' }}</span>
                             </div>
-                            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
-                                <span class="block text-[10px] uppercase font-extrabold text-slate-500">Jenis Kelamin</span>
-                                <span class="text-xs font-bold text-slate-800">{{ participant.gender === 'M' ? 'Pria (L)' : 'Wanita (P)' }}</span>
-                            </div>
+
+                            <!-- No HP -->
                             <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
                                 <div class="flex items-center justify-between">
-                                    <span class="block text-[10px] uppercase font-bold text-slate-500">No. WhatsApp / HP</span>
+                                    <span class="block text-[10px] uppercase font-bold text-slate-500">No. HP / WA</span>
                                     <span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2 rounded font-mono">phone</span>
                                 </div>
                                 <span class="text-xs font-semibold text-slate-800 font-mono">{{ participant.phone || '-' }}</span>
                             </div>
-                            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 col-span-2 flex justify-between items-center">
+
+                            <!-- Email & PIN -->
+                            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 col-span-2 sm:col-span-3 flex justify-between items-center">
                                 <div>
                                     <span class="block text-[10px] uppercase font-bold text-slate-500">Email Peserta</span>
                                     <span class="text-xs font-semibold text-slate-800 font-mono truncate max-w-[200px] block">{{ participant.email || '-' }}</span>
@@ -497,7 +540,6 @@ function resetForm() {
                                 </div>
                             </div>
                         </div>
-
                     </div>
 
                     <!-- State Menunggu / Multiple Results Hint -->

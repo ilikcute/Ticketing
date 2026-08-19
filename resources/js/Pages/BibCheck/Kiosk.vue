@@ -327,25 +327,27 @@ function toggleAutoReset() {
                         <span class="h-0.5 w-6 bg-[#FFD400] sm:w-8"></span>
                         <span
                             class="text-xs font-extrabold uppercase tracking-[0.28em] text-slate-500 sm:text-sm"
-                            >NAMA PESERTA</span
+                            >NAMA PESERTA / BIB</span
                         >
                         <span class="h-0.5 w-6 bg-[#FFD400] sm:w-8"></span>
                     </div>
 
                     <div
-                        class="my-0.5 truncate text-xl font-extrabold tracking-tight text-[#0B2A8A] sm:text-2xl md:text-3xl"
+                        class="my-0.5 truncate text-xl font-extrabold tracking-tight text-[#0B2A8A] sm:text-2xl md:text-3xl font-heading"
                     >
-                        {{ result.full_name ?? "—" }}
+                        {{ result.bib_name || result.full_name || "—" }}
                     </div>
 
-                    <div
-                        v-if="result?.category"
-                        class="mt-0.5 text-xs font-bold uppercase tracking-widest text-slate-400"
-                    >
-                        Kategori:
-                        <span class="font-extrabold text-[#0B2A8A]">{{
-                            result.category
-                        }}</span>
+                    <div class="mt-1 flex items-center justify-center gap-2 flex-wrap text-xs font-bold uppercase tracking-wider">
+                        <span v-if="result?.category" class="px-2.5 py-0.5 rounded-full bg-blue-50 text-[#0B2A8A] border border-blue-200">
+                            {{ result.category }}
+                        </span>
+                        <span v-if="result?.jersey_size && result.jersey_size !== '-'" class="px-2.5 py-0.5 rounded-full bg-yellow-100 text-yellow-900 border border-yellow-300 font-black">
+                            JERSEY: {{ result.jersey_size }}
+                        </span>
+                        <span v-if="result?.gender" class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                            {{ ['L', 'M'].includes(result.gender) ? 'Pria' : (['P', 'F'].includes(result.gender) ? 'Wanita' : result.gender) }}
+                        </span>
                     </div>
                 </div>
 

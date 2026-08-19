@@ -67,6 +67,9 @@ class BibCheckController extends Controller
 
         return response()->json([
             'full_name' => $participant->full_name,
+            'bib_name' => $participant->bib_name ?: $participant->full_name,
+            'jersey_size' => $participant->jersey_size ?? '-',
+            'gender' => $participant->gender,
             'bib_number' => $participant->bib_number ?? '—',
             'category' => $participant->category?->name ?? '-',
             'status' => $participant->status->value,

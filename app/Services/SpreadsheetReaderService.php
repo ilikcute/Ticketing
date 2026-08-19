@@ -298,30 +298,55 @@ class SpreadsheetReaderService
             'no tiket', 'nomor tiket', 'kode_pin', 'kode',
         ]);
 
-        // 8. Transaction ID / Booking Code
+        // 2. Transaction ID / Booking Code
         $trxId = $getValue([
             'transaction_id', 'kodebooking', 'kode booking', 'trxidtoko',
-            'order id', 'order at wita', 'order_id',
+            'order id', 'order at wita', 'order at wib', 'order_id',
         ]);
 
-        // 2. Nama Lengkap (Jika kasir toko tidak menginput nama pelanggan, fallback ke No Booking/PIN)
+        // 3. Nama Pemesan / Pembeli Utama (Buyer Name) vs Nama Tampil di BIB (BIB Name / Runner Name)
+        $buyerName = $getValue([
+            'buyer name', 'buyer_name', 'nama pembeli', 'nama pemesan',
+            'pemesan', 'nama_buyer', 'buyer',
+        ]);
+
         $firstName = $getValue(['first name', 'firstname', 'nama depan']);
         $lastName = $getValue(['last name', 'lastname', 'nama belakang']);
-        $fullName = null;
+        $runnerName = null;
         if ($firstName || $lastName) {
-            $fullName = trim("{$firstName} {$lastName}");
-        }
-        if (!$fullName) {
-            $fullName = $getValue([
-                'full_name', 'nama', 'nama_lengkap', 'nama lengkap', 'name',
-                'buyer name', 'nama peserta', 'participant_name',
-            ]);
-        }
-        if (empty($fullName) && !empty($pin)) {
-            $fullName = $trxId ? "Peserta Toko ({$trxId})" : "Peserta ({$pin})";
+            $runnerName = trim("{$firstName} {$lastName}");
         }
 
-        // 3. ID Card / NIK (Jika tidak ada pada POS IDM, default ke '-')
+        $explicitBibName = $getValue([
+            'name on bib', 'bib name', 'nama bib', 'nama di bib',
+            'nama pelari', 'runner name', 'nama_bib', 'bib_name',
+        ]);
+
+        // Resolusi Nama Tampil BIB (bib_name)
+        $bibName = $explicitBibName ?: ($runnerName ?: $getValue([
+            'nama peserta', 'participant_name', 'nama_peserta',
+        ]));
+
+        // Resolusi Nama Pemesan / Pembeli (full_name)
+        $fullName = $buyerName ?: $getValue([
+            'full_name', 'nama', 'nama_lengkap', 'nama lengkap', 'name',
+        ]);
+
+        if (!$fullName) {
+            $fullName = $runnerName ?: $bibName;
+        }
+
+        if (!$bibName) {
+            $bibName = $fullName;
+        }
+
+        // Fallback jika nama tidak diisi oleh kasir toko Indomaret
+        if (empty($fullName) && !empty($pin)) {
+            $fullName = $trxId ? "Peserta Toko ({$trxId})" : "Peserta ({$pin})";
+            $bibName = $fullName;
+        }
+
+        // 4. ID Card / NIK (Jika tidak ada pada POS IDM, default ke '-')
         $idCard = $getValue([
             'id_card_number', 'nik', 'no_ktp', 'ktp', 'identity_number',
             'id number nik ktp kitas or passport', 'id number', 'no identitas', 'passport',
@@ -330,7 +355,7 @@ class SpreadsheetReaderService
             $idCard = '-';
         }
 
-        // 4. Nomor Telepon / HP
+        // 5. Nomor Telepon / HP
         $phone = $getValue([
             'phone', 'phone_number', 'no_hp', 'nohp', 'hp', 'telepon',
             'notelp', 'no_telp', 'buyer mobile number', 'no handphone',
@@ -342,31 +367,65 @@ class SpreadsheetReaderService
             }
         }
 
-        // 5. Email
+        // 6. Email
         $email = $getValue(['email', 'buyer email', 'email peserta', 'e-mail']);
 
-        // 6. Jenis Kelamin
-        $rawGender = mb_strtolower((string) $getValue(['gender', 'gender jenis kelamin', 'jenis kelamin', 'jk', 'sex']));
+        // 7. Jenis Kelamin (Gender: L / P)
+        $rawGender = mb_strtolower((string) $getValue([
+            'gender', 'gender / jenis kelamin', 'gender jenis kelamin',
+            'jenis kelamin', 'jk', 'sex', 'jenis_kelamin',
+        ]));
         $gender = null;
-        if (in_array($rawGender, ['male', 'pria', 'l', 'laki-laki', 'm'])) {
-            $gender = 'M';
+        if (in_array($rawGender, ['male', 'pria', 'l', 'laki-laki', 'm', 'laki'])) {
+            $gender = 'L';
         } elseif (in_array($rawGender, ['female', 'wanita', 'p', 'perempuan', 'f'])) {
             $gender = 'P';
+        } elseif ($rawGender !== '') {
+            $gender = strtoupper(substr($rawGender, 0, 1));
         }
 
-        // 7. Kategori Lari / Event Class
+        // 8. Kategori Lari / Event Class
         $category = $getValue([
             'category', 'category_name', 'kategori', 'ticket type', 'tickettype',
-            'namapertunjukan', 'nama pertunjukan', 'kelas', 'ticket class', 'ticket segmentation',
+            'namapertunjukan', 'nama pertunjukan', 'ticket class', 'ticket segmentation',
         ]);
+
+        $rawKelas = $getValue(['kelas', 'ticket class']);
+
+        // 9. Ukuran Jersey (Apparel Size / Ukuran Baju)
+        $rawJersey = $getValue([
+            'apparel size / ukuran baju atau jersey', 'ukuran baju atau jersey',
+            'apparel size', 'ukuran jersey', 'ukuran baju', 'jersey size',
+            'jersey', 'size', 'ukuran', 'baju', 'ukuran_jersey', 'jersey_size',
+        ]);
+
+        $jerseySize = null;
+        $candidates = [$rawJersey, $rawKelas, $category, $rawRow['NamaPertunjukan'] ?? null];
+        foreach ($candidates as $cand) {
+            if (!$cand) continue;
+            if (preg_match('/(?:jersey|baju|size|ukuran)\s*[-:]?\s*([A-Z0-9]+)/i', $cand, $m)) {
+                $jerseySize = strtoupper(trim($m[1]));
+                break;
+            }
+            $cleanCand = strtoupper(trim($cand));
+            if (in_array($cleanCand, ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '3XL', '2XL', '4XL', 'ALL SIZE'])) {
+                $jerseySize = $cleanCand;
+                break;
+            }
+        }
+        if (!$jerseySize && $rawJersey) {
+            $jerseySize = strtoupper(trim($rawJersey));
+        }
 
         return [
             'pin_code' => $pin,
             'full_name' => $fullName,
+            'bib_name' => $bibName,
             'id_card_number' => $idCard,
             'phone' => $phone,
             'email' => $email,
             'gender' => $gender,
+            'jersey_size' => $jerseySize,
             'category' => $category,
             'transaction_id' => $trxId,
             'raw' => $rawRow,

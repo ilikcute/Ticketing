@@ -59,6 +59,9 @@ class ImportController extends Controller
             $raw = $err->raw_data['raw'] ?? $err->raw_data;
             $pin = $err->raw_data['pin_code'] ?? ($raw['KodePIN'] ?? ($raw['Ticket Number'] ?? ($raw['pin_code'] ?? '-')));
             $name = $err->raw_data['full_name'] ?? ($raw['nama'] ?? ($raw['full_name'] ?? ($raw['First Name'] ? trim(($raw['First Name'] ?? '') . ' ' . ($raw['Last Name'] ?? '')) : '-')));
+            $bibName = $err->raw_data['bib_name'] ?? ($name ?: '-');
+            $jersey = $err->raw_data['jersey_size'] ?? ($raw['Apparel Size / Ukuran Baju atau Jersey'] ?? ($raw['kelas'] ?? '-'));
+            $gender = $err->raw_data['gender'] ?? ($raw['Gender / Jenis Kelamin'] ?? '-');
             $phone = $err->raw_data['phone'] ?? ($raw['noHP'] ?? ($raw['noTelp'] ?? ($raw['Phone'] ?? ($raw['phone_number'] ?? '-'))));
             $trx = $err->raw_data['transaction_id'] ?? ($raw['KOdeBooking'] ?? ($raw['TrxIDtoko'] ?? ($raw['transaction_id'] ?? '-')));
             $category = $err->raw_data['category'] ?? ($raw['NamaPertunjukan'] ?? ($raw['kelas'] ?? ($raw['Ticket Type'] ?? '-')));
@@ -71,6 +74,9 @@ class ImportController extends Controller
                 'message' => $err->message,
                 'pin_code' => $pin ?: '-',
                 'full_name' => $name ?: '-',
+                'bib_name' => $bibName ?: '-',
+                'jersey_size' => $jersey ?: '-',
+                'gender' => $gender ?: '-',
                 'phone' => $phone ?: '-',
                 'transaction_id' => $trx ?: '-',
                 'category' => $category ?: '-',
@@ -100,7 +106,10 @@ class ImportController extends Controller
             'No',
             'Baris di File',
             'Kode PIN Duplikat',
-            'Nama Peserta',
+            'Nama Pemesan / Pembeli',
+            'Nama Tampil di BIB',
+            'Jenis Kelamin',
+            'Ukuran Jersey',
             'Nomor Telepon / WA',
             'NIK / ID Card',
             'Kategori / Kelas',
@@ -119,6 +128,9 @@ class ImportController extends Controller
             $raw = $err->raw_data['raw'] ?? $err->raw_data;
             $pin = $err->raw_data['pin_code'] ?? ($raw['KodePIN'] ?? ($raw['Ticket Number'] ?? ($raw['pin_code'] ?? '-')));
             $name = $err->raw_data['full_name'] ?? ($raw['nama'] ?? ($raw['full_name'] ?? ($raw['First Name'] ? trim(($raw['First Name'] ?? '') . ' ' . ($raw['Last Name'] ?? '')) : '-')));
+            $bibName = $err->raw_data['bib_name'] ?? ($name ?: '-');
+            $gender = $err->raw_data['gender'] ?? ($raw['Gender / Jenis Kelamin'] ?? '-');
+            $jersey = $err->raw_data['jersey_size'] ?? ($raw['Apparel Size / Ukuran Baju atau Jersey'] ?? ($raw['kelas'] ?? '-'));
             $phone = $err->raw_data['phone'] ?? ($raw['noHP'] ?? ($raw['noTelp'] ?? ($raw['Phone'] ?? ($raw['phone_number'] ?? '-'))));
             $idCard = $err->raw_data['id_card_number'] ?? ($raw['id_card_number'] ?? ($raw['nik'] ?? ($raw['ID Number (NIK / KTP / KITAS) or Passport'] ?? '-')));
             $category = $err->raw_data['category'] ?? ($raw['NamaPertunjukan'] ?? ($raw['kelas'] ?? ($raw['Ticket Type'] ?? '-')));
@@ -129,6 +141,9 @@ class ImportController extends Controller
                 $err->row_number > 0 ? "Baris #{$err->row_number}" : "Duplikat Dalam Batch",
                 $pin,
                 $name,
+                $bibName,
+                $gender,
+                $jersey,
                 $phone,
                 $idCard,
                 $category,
@@ -161,7 +176,10 @@ class ImportController extends Controller
             'No',
             'Baris di File',
             'Kode PIN',
-            'Nama Peserta',
+            'Nama Pemesan / Pembeli',
+            'Nama Tampil di BIB',
+            'Jenis Kelamin',
+            'Ukuran Jersey',
             'Nomor Telepon / WA',
             'NIK / ID Card',
             'Kategori / Kelas',
@@ -179,6 +197,9 @@ class ImportController extends Controller
             $raw = $err->raw_data['raw'] ?? $err->raw_data;
             $pin = $err->raw_data['pin_code'] ?? ($raw['KodePIN'] ?? ($raw['Ticket Number'] ?? ($raw['pin_code'] ?? '-')));
             $name = $err->raw_data['full_name'] ?? ($raw['nama'] ?? ($raw['full_name'] ?? ($raw['First Name'] ? trim(($raw['First Name'] ?? '') . ' ' . ($raw['Last Name'] ?? '')) : '-')));
+            $bibName = $err->raw_data['bib_name'] ?? ($name ?: '-');
+            $gender = $err->raw_data['gender'] ?? ($raw['Gender / Jenis Kelamin'] ?? '-');
+            $jersey = $err->raw_data['jersey_size'] ?? ($raw['Apparel Size / Ukuran Baju atau Jersey'] ?? ($raw['kelas'] ?? '-'));
             $phone = $err->raw_data['phone'] ?? ($raw['noHP'] ?? ($raw['noTelp'] ?? ($raw['Phone'] ?? ($raw['phone_number'] ?? '-'))));
             $idCard = $err->raw_data['id_card_number'] ?? ($raw['id_card_number'] ?? ($raw['nik'] ?? ($raw['ID Number (NIK / KTP / KITAS) or Passport'] ?? '-')));
             $category = $err->raw_data['category'] ?? ($raw['NamaPertunjukan'] ?? ($raw['kelas'] ?? ($raw['Ticket Type'] ?? '-')));
@@ -189,6 +210,9 @@ class ImportController extends Controller
                 $err->row_number > 0 ? "Baris #{$err->row_number}" : "-",
                 $pin,
                 $name,
+                $bibName,
+                $gender,
+                $jersey,
                 $phone,
                 $idCard,
                 $category,
@@ -212,11 +236,11 @@ class ImportController extends Controller
 
     public function downloadTemplate()
     {
-        $header = "pin_code,full_name,identity_number,category_name,gender,email,phone_number,emergency_contact\n";
+        $header = "pin_code,full_name,bib_name,identity_number,category_name,gender,jersey_size,email,phone_number,emergency_contact\n";
         $samples = [
-            "PIN-10001,\"Budi Santoso\",3171012345670001,5K,M,budi@example.com,081234567890,081987654321",
-            "PIN-10002,\"Siti Aminah\",3171012345670002,5K,F,siti@example.com,081234567891,081987654322",
-            "PIN-10003,\"Rahmat Hidayat\",3171012345670003,5K,M,rahmat@example.com,081234567892,081987654323",
+            "PIN-10001,\"Budi Santoso\",\"Budi Santoso\",3171012345670001,5K,L,M,budi@example.com,081234567890,081987654321",
+            "PIN-10002,\"Siti Aminah\",\"Siti Aminah\",3171012345670002,5K,P,S,siti@example.com,081234567891,081987654322",
+            "PIN-10003,\"Budi Santoso\",\"Rahmat Hidayat\",3171012345670003,10K,L,XL,rahmat@example.com,081234567892,081987654323",
         ];
 
         $csv = "\xEF\xBB\xBF" . $header . implode("\n", $samples) . "\n";
