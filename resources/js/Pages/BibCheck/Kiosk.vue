@@ -44,6 +44,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
     if (autoResetTimer) clearTimeout(autoResetTimer);
+    if (successTimer) clearTimeout(successTimer);
 });
 
 async function handleScan() {
@@ -288,47 +289,47 @@ async function submitEditName() {
 
         <!-- Header -->
         <header
-            class="relative z-10 mx-auto flex w-full max-w-7xl items-start justify-between gap-2 pt-2 sm:pt-3"
+            class="relative z-10 mx-auto flex w-full max-w-7xl items-start justify-between gap-2 pt-1 sm:pt-2"
         >
             <div
-                class="w-36 shrink-0 flex items-center justify-start transition duration-300 hover:scale-105 sm:w-48 md:w-56 drop-shadow-[0_12px_20px_rgba(0,0,0,0.18)]"
+                class="w-32 shrink-0 flex items-center justify-start transition duration-300 hover:scale-105 sm:w-44 md:w-52 drop-shadow-[0_12px_20px_rgba(0,0,0,0.18)]"
             >
                 <img
                     src="/images/logo-indomaret-funrun.png"
                     alt="Indomaret Fun Run 2026"
-                    class="w-auto max-h-18 object-contain sm:max-h-22 md:max-h-28 lg:max-h-32"
+                    class="w-auto max-h-16 object-contain sm:max-h-20 md:max-h-24 lg:max-h-28"
                 />
             </div>
 
             <div
-                class="flex-1 shrink-0 z-20 flex items-center justify-center -mt-1 transition duration-300 hover:scale-105 sm:-mt-2 md:-mt-4"
+                class="flex-1 shrink-0 z-20 flex items-center justify-center -mt-1 transition duration-300 hover:scale-105 sm:-mt-2 md:-mt-3"
             >
                 <img
                     src="/images/header-event-yogyakarta.png"
                     alt="Indomaret Fun Run 2026 Yogyakarta"
-                    class="w-auto object-contain max-h-28 sm:max-h-36 md:max-h-48 lg:max-h-56 drop-shadow-[0_0_18px_rgba(255,255,255,0.76)]"
+                    class="w-auto object-contain max-h-24 sm:max-h-32 md:max-h-40 lg:max-h-48 drop-shadow-[0_0_18px_rgba(255,255,255,0.76)]"
                 />
             </div>
 
             <div
-                class="w-36 shrink-0 flex items-center justify-end transition duration-300 hover:scale-105 sm:w-48 md:w-56 drop-shadow-[0_12px_20px_rgba(0,0,0,0.18)]"
+                class="w-32 shrink-0 flex items-center justify-end transition duration-300 hover:scale-105 sm:w-44 md:w-52 drop-shadow-[0_12px_20px_rgba(0,0,0,0.18)]"
             >
                 <img
                     src="/images/logo-indomaret.png"
                     alt="Indomaret"
-                    class="w-auto max-h-18 object-contain sm:max-h-22 md:max-h-28 lg:max-h-32"
+                    class="w-auto max-h-16 object-contain sm:max-h-20 md:max-h-24 lg:max-h-28"
                 />
             </div>
         </header>
 
-        <!-- Main Display Content -->
+        <!-- Main Display Content (Positioned higher with bold photogenic typography) -->
         <main
-            class="relative z-10 mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center py-2 sm:py-3"
+            class="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-start pt-1 sm:pt-2 -mt-2 sm:-mt-4 lg:-mt-6 space-y-2.5"
         >
             <!-- Toast Flash Sukses (Auto-close 3.5s) -->
             <div
                 v-if="successMessage"
-                class="mb-3 rounded-full bg-emerald-500/95 border border-white/30 px-5 py-2 text-xs sm:text-sm font-bold text-white shadow-2xl flex items-center gap-2.5 backdrop-blur-md transition-all duration-300 animate-fade-in"
+                class="rounded-full bg-emerald-500/95 border-2 border-white/40 px-6 py-2 text-xs sm:text-sm font-bold text-white shadow-2xl flex items-center gap-2.5 backdrop-blur-md transition-all duration-300 animate-fade-in"
             >
                 <span>✅</span>
                 <span>{{ successMessage }}</span>
@@ -372,63 +373,57 @@ async function submitEditName() {
                 </button>
             </div>
 
-            <!-- Result State -->
+            <!-- Result State (Photogenic Hero View) -->
             <div
                 v-else-if="result"
-                class="w-full space-y-2.5 animate-[fadeInUp_0.4s_ease-out]"
+                class="w-full space-y-3 animate-[fadeInUp_0.4s_ease-out]"
             >
-                <!-- Nomor BIB Display -->
+                <!-- Nomor BIB Display Card (Large, Bold, Photogenic) -->
                 <div
-                    class="relative overflow-hidden rounded-[24px] border-4 border-[#0B34AA]/20 bg-white p-3.5 text-center text-[#0B2A8A] shadow-2xl sm:p-5"
+                    class="relative overflow-hidden rounded-[28px] border-4 border-[#0B34AA]/25 bg-white/95 backdrop-blur-md py-3 px-6 sm:py-4 sm:px-8 text-center text-[#0B2A8A] shadow-[0_20px_50px_rgba(11,42,138,0.18)]"
                 >
-                    <div class="mb-0.5 flex items-center justify-center gap-2">
-                        <span class="h-0.5 w-6 bg-[#FFD400] sm:w-8"></span>
+                    <div class="mb-1 flex items-center justify-center gap-3">
+                        <span class="h-0.5 w-8 bg-[#FFD400] sm:w-12"></span>
                         <span
-                            class="text-xs font-extrabold uppercase tracking-[0.28em] text-slate-500 sm:text-sm"
+                            class="text-xs font-black uppercase tracking-[0.3em] text-slate-500 sm:text-sm font-heading"
                             >NOMOR BIB</span
                         >
-                        <span class="h-0.5 w-6 bg-[#FFD400] sm:w-8"></span>
+                        <span class="h-0.5 w-8 bg-[#FFD400] sm:w-12"></span>
                     </div>
 
                     <div
-                        class="font-bib my-0.5 text-6xl font-black leading-none tracking-wider sm:text-7xl md:text-8xl"
-                        style="
-                            color: #0b2a8a;
-                            text-shadow:
-                                0 0 20px rgba(11, 42, 138, 0.2),
-                                0 4px 8px rgba(0, 0, 0, 0.1);
-                        "
+                        class="font-bib-display my-0 text-8xl sm:text-9xl md:text-[9.5rem] lg:text-[11rem] font-black leading-none tracking-widest text-[#0B2A8A] drop-shadow-[0_6px_16px_rgba(11,42,138,0.22)] select-all"
                     >
                         {{ result.bib_number ?? "—" }}
                     </div>
                 </div>
 
-                <!-- Kartu Identitas Peserta / BIB (Dengan Fitur Edit Nama) -->
+                <!-- Kartu Identitas Peserta / BIB (Extra Large, Clean, Champion Feel) -->
                 <div
-                    class="rounded-[24px] border-4 border-[#0B34AA]/20 bg-white p-3.5 text-center text-[#0B2A8A] shadow-2xl sm:p-4 relative group"
+                    class="rounded-[28px] border-4 border-[#0B34AA]/25 bg-white/95 backdrop-blur-md py-3.5 px-6 sm:py-4.5 sm:px-8 text-center text-[#0B2A8A] shadow-[0_20px_50px_rgba(11,42,138,0.18)] relative group"
                 >
-                    <div class="mb-0.5 flex items-center justify-center gap-2">
-                        <span class="h-0.5 w-6 bg-[#FFD400] sm:w-8"></span>
+                    <div class="mb-1 flex items-center justify-center gap-3">
+                        <span class="h-0.5 w-8 bg-[#FFD400] sm:w-12"></span>
                         <span
-                            class="text-xs font-extrabold uppercase tracking-[0.28em] text-slate-500 sm:text-sm"
+                            class="text-xs font-black uppercase tracking-[0.3em] text-slate-500 sm:text-sm font-heading"
                             >NAMA TAMPIL DI BIB</span
                         >
-                        <span class="h-0.5 w-6 bg-[#FFD400] sm:w-8"></span>
+                        <span class="h-0.5 w-8 bg-[#FFD400] sm:w-12"></span>
                     </div>
 
                     <!-- Nama Tampil di BIB & Tombol Edit -->
-                    <div class="flex items-center justify-center gap-2 my-0.5">
+                    <div class="flex items-center justify-center gap-3 my-1">
                         <div
-                            class="truncate text-xl font-extrabold tracking-tight text-[#0B2A8A] sm:text-2xl md:text-3xl font-heading"
+                            class="font-runner-name truncate text-2xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-black tracking-tight text-[#0B2A8A] leading-tight select-all drop-shadow-sm"
                         >
                             {{ result.bib_name || result.full_name || "—" }}
                         </div>
                         <button
                             @click.stop="openEditNameModal"
-                            class="p-1.5 rounded-full bg-yellow-100 hover:bg-[#FFD400] text-[#0B2A8A] border border-yellow-300 shadow-sm transition hover:scale-110 shrink-0"
+                            class="p-2 rounded-full bg-yellow-100 hover:bg-[#FFD400] text-[#0B2A8A] border-2 border-yellow-400 shadow-md transition hover:scale-110 shrink-0"
                             title="Edit / Sesuaikan Nama Tampil di BIB"
                         >
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
                             </svg>
                         </button>
@@ -437,35 +432,36 @@ async function submitEditName() {
                     <!-- Subtext Info Jika Beda Dengan Pembeli Asli -->
                     <div
                         v-if="result.full_name && result.bib_name && result.bib_name !== result.full_name"
-                        class="text-xs text-slate-500 font-semibold mb-1"
+                        class="text-xs text-slate-500 font-semibold mb-2"
                     >
                         Pembeli / Pemesan: <strong class="text-slate-800">{{ result.full_name }}</strong>
                     </div>
 
-                    <!-- Badges -->
-                    <div class="mt-1 flex items-center justify-center gap-2 flex-wrap text-xs font-bold uppercase tracking-wider">
-                        <span v-if="result?.category" class="px-2.5 py-0.5 rounded-full bg-blue-50 text-[#0B2A8A] border border-blue-200">
+                    <!-- Badges Row -->
+                    <div class="mt-2 flex items-center justify-center gap-2.5 flex-wrap text-xs sm:text-sm font-bold uppercase tracking-wider">
+                        <span v-if="result?.category" class="px-3.5 py-1 rounded-full bg-blue-50 text-[#0B2A8A] border-2 border-blue-200 font-black shadow-xs">
                             {{ result.category }}
                         </span>
-                        <span v-if="result?.jersey_size && result.jersey_size !== '-'" class="px-2.5 py-0.5 rounded-full bg-yellow-100 text-yellow-900 border border-yellow-300 font-black">
+                        <span v-if="result?.jersey_size && result.jersey_size !== '-'" class="px-3.5 py-1 rounded-full bg-gradient-to-r from-yellow-200 to-amber-300 text-yellow-950 border-2 border-yellow-400 font-black font-mono shadow-xs">
                             JERSEY: {{ result.jersey_size }}
                         </span>
-                        <span v-if="result?.gender" class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
-                            {{ ['L', 'M'].includes(result.gender) ? 'Pria' : (['P', 'F'].includes(result.gender) ? 'Wanita' : result.gender) }}
+                        <span v-if="result?.gender" class="px-3.5 py-1 rounded-full bg-slate-100 text-slate-700 border-2 border-slate-200 font-bold shadow-xs">
+                            {{ ['L', 'M'].includes(result.gender) ? 'PRIA' : (['P', 'F'].includes(result.gender) ? 'WANITA' : result.gender) }}
                         </span>
                         <button
                             @click.stop="openEditNameModal"
-                            class="px-2.5 py-0.5 rounded-full bg-[#0E7BDC] hover:bg-blue-600 text-white font-extrabold text-[10px] shadow-sm transition flex items-center gap-1"
+                            class="px-3.5 py-1 rounded-full bg-[#0E7BDC] hover:bg-blue-600 text-white font-black text-xs uppercase shadow-md transition flex items-center gap-1.5 font-heading hover:scale-105"
                         >
                             <span>✏️ Ubah Nama BIB</span>
                         </button>
                     </div>
                 </div>
 
-                <div class="pt-0.5 text-center">
+                <!-- Tombol Reset Sederhana -->
+                <div class="pt-1 text-center">
                     <button
                         @click="resetToIdle"
-                        class="rounded-full bg-black/30 px-5 py-1.5 text-xs font-extrabold text-white/70 backdrop-blur-md transition hover:bg-black/50 hover:text-white"
+                        class="rounded-full bg-black/35 hover:bg-black/55 px-6 py-2 text-xs font-black text-white backdrop-blur-md transition shadow-md hover:scale-105 uppercase tracking-wider font-heading"
                     >
                         ✕ Reset / Scan Peserta Berikutnya
                     </button>
@@ -495,7 +491,7 @@ async function submitEditName() {
 
         <!-- Footer -->
         <footer
-            class="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 items-center justify-between gap-3 border-t border-white/10 pt-3 md:grid-cols-12"
+            class="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 items-center justify-between gap-3 border-t border-white/10 pt-2 md:grid-cols-12"
         >
             <div
                 class="flex items-center justify-center md:col-span-3 md:justify-start"
@@ -503,18 +499,18 @@ async function submitEditName() {
                 <img
                     src="/images/tagline-catch-the-fun.png"
                     alt="Catch The Fun Run The City"
-                    class="h-14 w-auto object-contain transition duration-300 hover:scale-105 md:h-18 lg:h-20 drop-shadow-[0_10px_18px_rgba(0,0,0,0.18)]"
+                    class="h-12 w-auto object-contain transition duration-300 hover:scale-105 md:h-16 lg:h-18 drop-shadow-[0_10px_18px_rgba(0,0,0,0.18)]"
                 />
             </div>
 
             <div class="flex w-full justify-center md:col-span-6">
                 <div
-                    class="flex w-full items-center justify-center rounded-3xl border border-white/60 bg-white px-5 py-2.5 shadow-2xl transition duration-300 hover:scale-[1.01] sm:px-6 sm:py-3"
+                    class="flex w-full items-center justify-center rounded-3xl border border-white/60 bg-white px-5 py-2 shadow-xl transition duration-300 hover:scale-[1.01] sm:px-6 sm:py-2.5"
                 >
                     <img
                         src="/images/media-partner.png"
                         alt="Official Mobile Banking Partner & Media Partners"
-                        class="max-h-16 w-auto max-w-full object-contain md:max-h-20 lg:max-h-24"
+                        class="max-h-14 w-auto max-w-full object-contain md:max-h-18 lg:max-h-20"
                     />
                 </div>
             </div>
@@ -644,10 +640,16 @@ async function submitEditName() {
 </template>
 
 <style>
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@800;900&family=Outfit:wght@700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@800;900&family=Montserrat:wght@800;900&family=JetBrains+Mono:wght@800;900&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap");
 
-.font-bib {
-    font-family: "JetBrains Mono", monospace;
+.font-bib-display {
+    font-family: "Bebas Neue", "JetBrains Mono", cursive, sans-serif;
+    letter-spacing: 0.05em;
+}
+
+.font-runner-name {
+    font-family: "Outfit", "Montserrat", sans-serif;
+    text-transform: uppercase;
 }
 
 .font-heading {
