@@ -15,6 +15,15 @@ const loading = ref(false);
 const autoResetEnabled = ref(false); // Default nonaktif agar peserta bisa foto & upload sosmed
 const autoResetSeconds = ref(15);
 let autoResetTimer = null;
+let successTimer = null;
+
+function showSuccessToast(msg) {
+    if (successTimer) clearTimeout(successTimer);
+    successMessage.value = msg;
+    successTimer = setTimeout(() => {
+        successMessage.value = "";
+    }, 3500);
+}
 
 // State Modal Edit Nama BIB
 const showEditModal = ref(false);
@@ -147,7 +156,7 @@ async function submitEditName() {
         // Perbarui data lokal secara instan
         result.value.bib_name = data.bib_name;
         showEditModal.value = false;
-        successMessage.value = `Nama di BIB berhasil diubah menjadi "${data.bib_name}"!`;
+        showSuccessToast(`Nama di BIB berhasil diubah menjadi "${data.bib_name}"!`);
     } catch {
         editError.value = "Terjadi kesalahan koneksi ke server.";
     } finally {
@@ -316,13 +325,19 @@ async function submitEditName() {
         <main
             class="relative z-10 mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center py-2 sm:py-3"
         >
-            <!-- Toast Flash Sukses -->
+            <!-- Toast Flash Sukses (Auto-close 3.5s) -->
             <div
                 v-if="successMessage"
-                class="mb-3 rounded-full bg-emerald-500 px-6 py-2 text-xs sm:text-sm font-bold text-white shadow-xl flex items-center gap-2 animate-bounce"
+                class="mb-3 rounded-full bg-emerald-500/95 border border-white/30 px-5 py-2 text-xs sm:text-sm font-bold text-white shadow-2xl flex items-center gap-2.5 backdrop-blur-md transition-all duration-300 animate-fade-in"
             >
                 <span>✅</span>
                 <span>{{ successMessage }}</span>
+                <button
+                    @click="successMessage = ''"
+                    class="ml-2 text-white/80 hover:text-white font-black text-xs transition"
+                >
+                    ✕
+                </button>
             </div>
 
             <!-- Loading State -->

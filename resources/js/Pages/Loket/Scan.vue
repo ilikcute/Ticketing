@@ -16,6 +16,15 @@ const identityConfirmed = ref(true);
 const errorMessage = ref('');
 const successFlash = ref('');
 const loading = ref(false);
+let successFlashTimer = null;
+
+function showSuccessFlash(msg) {
+    if (successFlashTimer) clearTimeout(successFlashTimer);
+    successFlash.value = msg;
+    successFlashTimer = setTimeout(() => {
+        successFlash.value = '';
+    }, 4000);
+}
 
 const isClaimed = ref(false);
 const claimedByName = ref('');
@@ -125,7 +134,7 @@ function submitAssign() {
         identity_confirmed: identityConfirmed.value,
     }, {
         onSuccess: () => {
-            successFlash.value = `BIB #${bibNumber.value} &rarr; ${participant.value?.full_name.toUpperCase()} BERHASIL DIASIGN!`;
+            showSuccessFlash(`BIB #${bibNumber.value} &rarr; ${participant.value?.full_name.toUpperCase()} BERHASIL DIASIGN!`);
             resetForm();
         },
         onError: (errors) => {
@@ -151,7 +160,7 @@ function submitResetClaim() {
         onSuccess: () => {
             showResetModal.value = false;
             adminPassword.value = '';
-            successFlash.value = `SENGKETA DISETUJUI: PIN ${participant.value?.pin_code} berhasil di-reset oleh Admin! Silakan assign Nomor BIB baru.`;
+            showSuccessFlash(`SENGKETA DISETUJUI: PIN ${participant.value?.pin_code} berhasil di-reset oleh Admin! Silakan assign Nomor BIB baru.`);
             handleSearch(participant.value?.pin_code, 'pin');
         },
         onError: (errors) => {
@@ -229,7 +238,7 @@ async function submitUpdateBibName() {
 
         participant.value.bib_name = data.bib_name;
         showEditBibNameModal.value = false;
-        successFlash.value = `NAMA DI BIB BERHASIL DIUBAH: "${data.bib_name}"`;
+        showSuccessFlash(`NAMA DI BIB BERHASIL DIUBAH: "${data.bib_name}"`);
     } catch {
         editBibNameError.value = 'Terjadi gangguan jaringan saat menyimpan perubahan nama.';
     } finally {
