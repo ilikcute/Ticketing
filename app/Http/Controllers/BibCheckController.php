@@ -81,25 +81,31 @@ class BibCheckController extends Controller
     }
 
     /**
-     * Memperbarui Nama Tampil di BIB jika 1 pembeli membeli banyak tiket secara kolektif.
+     * Memperbarui Nama Tampil di BIB dari Kiosk Publik (dengan strict credential verification).
      */
     public function updateBibName(Request $request)
     {
         $request->validate([
             'code' => ['required', 'string'],
             'bib_name' => ['required', 'string', 'max:100'],
+            'id' => ['nullable', 'integer'],
         ]);
 
         $code = trim($request->string('code')->toString());
         $newBibName = trim($request->string('bib_name')->toString());
 
+        // Cari HANYA berdasarkan kredensial sah (PIN atau Nomor BIB)
         $participant = Participant::where('pin_code', $code)
             ->orWhere('bib_number', $code)
-            ->orWhere('id', $request->input('id'))
             ->first();
 
-        if (!$participant) {
-            return response()->json(['message' => 'Data peserta tidak ditemukan.'], 404);
+        if (! $participant) {
+            return response()->json(['message' => 'Data peserta tidak ditemukan atau kredensial PIN/BIB tidak valid.'], 404);
+        }
+
+        // Strict Authorization Boundary: Jika ID dikirimkan, wajib identik dengan ID peserta pemilik PIN/BIB
+        if ($request->filled('id') && (int) $participant->id !== (int) $request->input('id')) {
+            return response()->json(['message' => 'Otorisasi ditolak: Kredensial tidak sesuai dengan ID peserta.'], 403);
         }
 
         $participant->update([

@@ -16,6 +16,7 @@ const identityConfirmed = ref(true);
 const errorMessage = ref('');
 const successFlash = ref('');
 const loading = ref(false);
+const isAssigning = ref(false);
 let successFlashTimer = null;
 
 function showSuccessFlash(msg) {
@@ -139,7 +140,7 @@ function selectParticipant(p) {
 }
 
 function submitAssign() {
-    if (!participant.value || isClaimed.value) return;
+    if (!participant.value || isClaimed.value || isAssigning.value) return;
 
     const cleanBib = (bibNumber.value || '').toString().trim();
 
@@ -161,6 +162,7 @@ function submitAssign() {
     }
 
     errorMessage.value = '';
+    isAssigning.value = true;
 
     router.post('/loket/assign', {
         pin_code: participant.value.pin_code,
@@ -174,6 +176,9 @@ function submitAssign() {
         onError: (errors) => {
             errorMessage.value = Object.values(errors)[0];
             nextTick(() => bibInput.value?.focus());
+        },
+        onFinish: () => {
+            isAssigning.value = false;
         },
     });
 }
@@ -495,10 +500,11 @@ async function submitUpdateBibName() {
 
                         <button
                             @click="submitAssign"
-                            :disabled="!identityConfirmed || !bibNumber || !/^\d+$/.test(bibNumber.trim())"
+                            :disabled="!identityConfirmed || !bibNumber || !/^\d+$/.test(bibNumber.trim()) || isAssigning"
                             class="w-full py-3 sm:py-3.5 px-4 rounded-xl sm:rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 active:scale-95 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-md shadow-emerald-500/25 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 font-heading"
                         >
-                            <span>✓ Konfirmasi &amp; Cetak Struk</span>
+                            <span v-if="isAssigning" class="animate-spin text-sm">⏳</span>
+                            <span>{{ isAssigning ? 'Memproses Transaksi...' : '✓ Konfirmasi & Cetak Struk' }}</span>
                         </button>
                     </div>
 

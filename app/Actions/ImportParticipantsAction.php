@@ -151,12 +151,11 @@ class ImportParticipantsAction
     }
 
     /**
-     * Resolusi kategori event secara cerdas berdasarkan nama / substring
+     * Resolusi kategori event secara cerdas berdasarkan nama / substring (In-Memory Lookup, 0 DB Queries).
      */
     public function resolveCategory(array $row, $categoriesByName, Event $event): ?Category
     {
-        $categories = $event->categories()->get();
-        if ($categories->isEmpty()) {
+        if ($categoriesByName->isEmpty()) {
             return null;
         }
 
@@ -166,20 +165,19 @@ class ImportParticipantsAction
             return $categoriesByName->get($rowCat);
         }
 
-        if ($categories->count() === 1) {
-            return $categories->first();
+        if ($categoriesByName->count() === 1) {
+            return $categoriesByName->first();
         }
 
         if ($rowCat !== '') {
-            foreach ($categories as $c) {
-                $cName = mb_strtolower($c->name);
-                if (str_contains($rowCat, $cName)) {
+            foreach ($categoriesByName as $cName => $c) {
+                if (str_contains($rowCat, (string) $cName)) {
                     return $c;
                 }
             }
         }
 
-        return $categories->first();
+        return $categoriesByName->first();
     }
 
     private function validateRow(array $row, $categoriesByName, Event $event): ?ImportErrorReason

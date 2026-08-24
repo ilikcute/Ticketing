@@ -132,28 +132,31 @@ class DashboardController extends Controller
             ];
         }
 
-        $peakHourRow = BibAssignmentLog::where('action', 'assign')
-            ->select(\Illuminate\Support\Facades\DB::raw("{$hourExpr} as hour_slot"), \Illuminate\Support\Facades\DB::raw('count(*) as total_scans'))
-            ->groupBy('hour_slot')
-            ->orderByDesc('total_scans')
-            ->first();
-
-        if ($peakHourRow && $peakHourRow->hour_slot !== null) {
-            $h = (int) $peakHourRow->hour_slot;
+        if (!empty($hourlyDataRaw)) {
+            $sortedHours = $hourlyDataRaw;
+            arsort($sortedHours);
+            $h = (int) array_key_first($sortedHours);
+            $peakCount = (int) reset($sortedHours);
             $startH = str_pad((string)$h, 2, '0', STR_PAD_LEFT);
             $endH = str_pad((string)(($h + 1) % 24), 2, '0', STR_PAD_LEFT);
             $peakHourFormatted = "{$startH}:00 - {$endH}:00 WIB";
-            $peakHourCount = $peakHourRow->total_scans;
+            $peakHourCount = $peakCount;
         } else {
             $peakHourFormatted = "Belum Ada Aktivitas";
             $peakHourCount = 0;
         }
 
-        // Full Counter Performance Breakdown
+        // Full Counter Performance Breakdown (1 Single Aggregate GroupBy Query)
+        $scanCountsByOfficer = BibAssignmentLog::where('action', 'assign')
+            ->select('performed_by', \Illuminate\Support\Facades\DB::raw('count(*) as total'))
+            ->groupBy('performed_by')
+            ->pluck('total', 'performed_by')
+            ->all();
+
         $counterPerformance = User::whereIn('role', ['loket', 'admin'])
             ->get()
-            ->map(function ($u) use ($totalClaimed) {
-                $scans = BibAssignmentLog::where('performed_by', $u->id)->where('action', 'assign')->count();
+            ->map(function ($u) use ($totalClaimed, $scanCountsByOfficer) {
+                $scans = (int) ($scanCountsByOfficer[$u->id] ?? 0);
                 $percentage = $totalClaimed > 0 ? round(($scans / $totalClaimed) * 100, 1) : 0;
                 return [
                     'id' => $u->id,

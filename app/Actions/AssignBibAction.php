@@ -27,8 +27,8 @@ class AssignBibAction
         }
 
         return DB::transaction(function () use ($pinCode, $bibNumber, $officer, $device) {
-            // lockForUpdate mengunci baris ini sampai transaction selesai,
-            // sehingga request dari loket lain untuk PIN yang sama harus menunggu.
+            // lockForUpdate mengunci baris peserta ini sampai transaksi selesai,
+            // sehingga request paralel dari loket lain untuk PIN yang sama wajib menunggu antrean.
             $participant = Participant::query()
                 ->where('pin_code', $pinCode)
                 ->lockForUpdate()
@@ -40,24 +40,41 @@ class AssignBibAction
                 );
             }
 
-            // Unique constraint di DB adalah lapisan pertahanan terakhir,
-            // tapi kita cek dulu di sini supaya error message-nya jelas untuk petugas.
+            // Pengecekan cepat awal di application layer (tanpa FOR UPDATE pada baris non-existent agar tidak memicu gap-lock)
             $bibTaken = Participant::query()
                 ->where('bib_number', $bibNumber)
-                ->lockForUpdate()
                 ->exists();
 
             if ($bibTaken) {
                 throw new RuntimeException("Nomor BIB {$bibNumber} sudah dipakai peserta lain.");
             }
 
-            $participant->update([
-                'bib_number' => $bibNumber,
-                'status' => ParticipantStatus::Claimed,
-                'claimed_by' => $officer->id,
-                'claimed_at' => now(),
-                'claimed_device' => $device,
-            ]);
+            try {
+                $participant->update([
+                    'bib_number' => $bibNumber,
+                    'status' => ParticipantStatus::Claimed,
+                    'claimed_by' => $officer->id,
+                    'claimed_at' => now(),
+                    'claimed_device' => $device,
+                ]);
+            } catch (\Illuminate\Database\QueryException $e) {
+                $errorCode = $e->getCode();
+                $errorMsg = $e->getMessage();
+
+                // Klasifikasi spesifik integrity constraint violation (SQLSTATE 23000 / MySQL 1062)
+                if ($errorCode === '23000' || str_contains($errorMsg, '1062')) {
+                    if (str_contains($errorMsg, 'bib_number')) {
+                        throw new RuntimeException("Nomor BIB #{$bibNumber} baru saja diambil oleh loket lain. Silakan gunakan nomor BIB fisik yang lain.");
+                    }
+                    if (str_contains($errorMsg, 'pin_code')) {
+                        throw new RuntimeException("PIN #{$pinCode} baru saja diproses oleh loket lain.");
+                    }
+                    throw new RuntimeException("Terjadi pelanggaran integritas data transaksi: duplikasi record.");
+                }
+
+                // Lempar exception jika bukan duplicate constraint
+                throw $e;
+            }
 
             BibAssignmentLog::create([
                 'participant_id' => $participant->id,
@@ -67,6 +84,6 @@ class AssignBibAction
             ]);
 
             return $participant->fresh();
-        });
+        }, attempts: 3);
     }
 }

@@ -19,101 +19,107 @@ class LoketController extends Controller
     }
 
     /**
-     * Dipanggil via AJAX/Inertia saat petugas scan barcode / input PIN, No. HP (phone), atau NIK (id_card_number).
-     * Mengembalikan detail peserta untuk verifikasi manual (FR-05, FR-06).
+     * Dipanggil via AJAX/Inertia saat petugas scan barcode / input PIN, No. HP, NIK, atau Nama.
+     * Menggunakan Canonical Input Normalization & Branching Search Strategy.
      */
     public function lookup(Request $request, ?string $pinCode = null)
     {
-        $term = trim($request->input('search') ?? $request->input('q') ?? $pinCode ?? $request->input('pinCode') ?? '');
+        $rawTerm = trim($request->input('search') ?? $request->input('q') ?? $pinCode ?? $request->input('pinCode') ?? '');
         $type = $request->input('type', 'all'); // 'all', 'pin', 'phone', 'id_card'
 
-        if ($term === '') {
+        if ($rawTerm === '') {
             return response()->json(['message' => 'Silakan masukkan PIN, No. HP, atau NIK untuk mencari peserta.'], 422);
         }
 
-        $query = Participant::with(['category', 'claimedBy']);
+        $participants = collect();
 
         if ($type === 'pin') {
-            $query->where(function ($q) use ($term) {
-                $q->where('pin_code', $term)
-                  ->orWhereRaw('LOWER(pin_code) = ?', [strtolower($term)])
-                  ->orWhere('pin_code', 'like', "%{$term}%");
-            });
+            // Mode A: Exact PIN Search (Normalized to Upper)
+            $cleanPin = strtoupper($rawTerm);
+            $participants = Participant::with(['category', 'claimedBy'])
+                ->where('pin_code', $cleanPin)
+                ->limit(1)
+                ->get();
         } elseif ($type === 'phone') {
-            $cleanDigits = preg_replace('/[^0-9]/', '', $term);
-            $query->where(function ($q) use ($term, $cleanDigits) {
-                $q->where('phone', $term);
-                if (!empty($cleanDigits)) {
-                    $q->orWhere('phone', $cleanDigits)
-                      ->orWhere('phone', 'like', "%{$cleanDigits}%");
-                    
-                    if (str_starts_with($cleanDigits, '62')) {
-                        $alt08 = '0' . substr($cleanDigits, 2);
-                        $q->orWhere('phone', $alt08)->orWhere('phone', 'like', "%{$alt08}%");
-                    } elseif (str_starts_with($cleanDigits, '0')) {
-                        $alt62 = '62' . substr($cleanDigits, 1);
-                        $q->orWhere('phone', $alt62)->orWhere('phone', "+{$alt62}")->orWhere('phone', 'like', "%{$alt62}%");
-                    }
-                }
-            });
+            // Mode B: Exact Phone Search (Menggunakan Index Phone)
+            $cleanDigits = preg_replace('/[^0-9]/', '', $rawTerm);
+            $variants = array_unique(array_filter([
+                $rawTerm,
+                $cleanDigits,
+                str_starts_with($cleanDigits, '62') ? '0' . substr($cleanDigits, 2) : null,
+                str_starts_with($cleanDigits, '0') ? '62' . substr($cleanDigits, 1) : null,
+                str_starts_with($cleanDigits, '0') ? '+62' . substr($cleanDigits, 1) : null,
+            ]));
+
+            $participants = Participant::with(['category', 'claimedBy'])
+                ->whereIn('phone', $variants)
+                ->limit(25)
+                ->get();
         } elseif ($type === 'id_card') {
-            $query->where(function ($q) use ($term) {
-                $q->where('id_card_number', $term);
-                if (strlen($term) >= 3) {
-                    $q->orWhere('id_card_number', 'like', "%{$term}%");
-                }
-            });
+            // Mode C: Exact NIK Search (Menggunakan Index NIK)
+            $participants = Participant::with(['category', 'claimedBy'])
+                ->where('id_card_number', $rawTerm)
+                ->limit(25)
+                ->get();
         } else {
-            // 'all' / Auto-detect
-            $cleanDigits = preg_replace('/[^0-9]/', '', $term);
-            $query->where(function ($q) use ($term, $cleanDigits) {
-                // Exact or Case-insensitive PIN
-                $q->where('pin_code', $term)
-                  ->orWhereRaw('LOWER(pin_code) = ?', [strtolower($term)]);
+            // Mode D: 'all' Canonical Branching Router (Deterministic Priority)
 
-                // NIK ID Card
-                $q->orWhere('id_card_number', $term);
+            // 1. Prioritas 1: Exact PIN Lookup (O(log N) Indexed Unique)
+            $cleanPin = strtoupper($rawTerm);
+            $exactPin = Participant::with(['category', 'claimedBy'])
+                ->where('pin_code', $cleanPin)
+                ->first();
 
-                // Phone
-                $q->orWhere('phone', $term);
-                if (!empty($cleanDigits)) {
-                    $q->orWhere('phone', $cleanDigits)
-                      ->orWhere('phone', 'like', "%{$cleanDigits}%");
-                    
-                    if (str_starts_with($cleanDigits, '62')) {
-                        $alt08 = '0' . substr($cleanDigits, 2);
-                        $q->orWhere('phone', $alt08)->orWhere('phone', 'like', "%{$alt08}%");
-                    } elseif (str_starts_with($cleanDigits, '0')) {
-                        $alt62 = '62' . substr($cleanDigits, 1);
-                        $q->orWhere('phone', $alt62)->orWhere('phone', "+{$alt62}")->orWhere('phone', 'like', "%{$alt62}%");
+            if ($exactPin) {
+                $participants = collect([$exactPin]);
+            } else {
+                // 2. Prioritas 2: NIK Format (15-18 digit angka)
+                if (preg_match('/^[0-9]{15,18}$/', $rawTerm)) {
+                    $nikMatches = Participant::with(['category', 'claimedBy'])
+                        ->where('id_card_number', $rawTerm)
+                        ->limit(25)
+                        ->get();
+                    if ($nikMatches->isNotEmpty()) {
+                        $participants = $nikMatches;
                     }
                 }
 
-                // Partial matching if length is at least 3
-                if (strlen($term) >= 3) {
-                    $q->orWhere('pin_code', 'like', "%{$term}%")
-                      ->orWhere('id_card_number', 'like', "%{$term}%")
-                      ->orWhere('full_name', 'like', "%{$term}%")
-                      ->orWhere('bib_name', 'like', "%{$term}%");
-                }
-            });
-        }
+                // 3. Prioritas 3: No. HP Format (9-15 digit angka)
+                if ($participants->isEmpty() && preg_match('/^[0-9+]{9,15}$/', $rawTerm)) {
+                    $cleanDigits = preg_replace('/[^0-9]/', '', $rawTerm);
+                    $variants = array_unique(array_filter([
+                        $rawTerm,
+                        $cleanDigits,
+                        str_starts_with($cleanDigits, '62') ? '0' . substr($cleanDigits, 2) : null,
+                        str_starts_with($cleanDigits, '0') ? '62' . substr($cleanDigits, 1) : null,
+                    ]));
 
-        $participants = $query->limit(25)->get();
+                    $phoneMatches = Participant::with(['category', 'claimedBy'])
+                        ->whereIn('phone', $variants)
+                        ->limit(25)
+                        ->get();
+                    if ($phoneMatches->isNotEmpty()) {
+                        $participants = $phoneMatches;
+                    }
+                }
+
+                // 4. Prioritas 4: Name Search Fallback (Explicitly non-exact, hanya dieksekusi jika bukan PIN/NIK/HP)
+                if ($participants->isEmpty() && strlen($rawTerm) >= 2) {
+                    $participants = Participant::with(['category', 'claimedBy'])
+                        ->where('full_name', 'like', "%{$rawTerm}%")
+                        ->orWhere('bib_name', 'like', "%{$rawTerm}%")
+                        ->limit(25)
+                        ->get();
+                }
+            }
+        }
 
         if ($participants->isEmpty()) {
-            return response()->json(['message' => "Data peserta tidak ditemukan berdasarkan kata kunci '{$term}'."], 404);
+            return response()->json(['message' => "Data peserta tidak ditemukan berdasarkan kata kunci '{$rawTerm}'."], 404);
         }
 
-        // Check if there is an exact single match on PIN or if count is 1
-        $exactPinMatch = $participants->first(fn ($p) => strcasecmp($p->pin_code, $term) === 0);
-        $singleParticipant = null;
-
-        if ($participants->count() === 1) {
-            $singleParticipant = $participants->first();
-        } elseif ($exactPinMatch && ($type === 'pin' || $type === 'all')) {
-            $singleParticipant = $exactPinMatch;
-        }
+        // Single participant match detection
+        $singleParticipant = $participants->count() === 1 ? $participants->first() : null;
 
         if ($singleParticipant) {
             $isClaimed = $singleParticipant->status->value !== 'unclaimed' || !empty($singleParticipant->bib_number);
