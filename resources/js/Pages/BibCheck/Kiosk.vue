@@ -218,35 +218,35 @@ async function submitEditName() {
 
         <!-- Header -->
         <header
-            class="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between gap-1.5 sm:gap-2 pt-6 sm:pt-1"
+            class="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between gap-2 sm:gap-4 pt-4 sm:pt-2 px-2"
         >
             <div
-                class="w-20 sm:w-36 md:w-48 shrink-0 flex items-center justify-start transition duration-300 hover:scale-105 drop-shadow-[0_8px_14px_rgba(0,0,0,0.18)]"
+                class="w-24 sm:w-40 md:w-52 shrink-0 flex items-center justify-start transition duration-300 hover:scale-105 drop-shadow-[0_8px_14px_rgba(0,0,0,0.18)]"
             >
                 <img
                     src="/images/logo-indomaret-funrun.png"
                     alt="Indomaret Fun Run 2026"
-                    class="w-auto max-h-10 sm:max-h-16 md:max-h-20 lg:max-h-22 object-contain"
+                    class="w-auto max-h-12 sm:max-h-18 md:max-h-22 lg:max-h-24 object-contain"
                 />
             </div>
 
             <div
-                class="flex-1 shrink-0 z-20 flex items-center justify-center transition duration-300 hover:scale-105"
+                class="flex-1 shrink-0 z-20 flex items-center justify-center transition duration-300 hover:scale-105 px-2"
             >
                 <img
                     src="/images/header-event-yogyakarta.png"
                     alt="Indomaret Fun Run 2026 Yogyakarta"
-                    class="w-auto object-contain max-h-14 sm:max-h-24 md:max-h-28 lg:max-h-32 drop-shadow-[0_0_18px_rgba(255,255,255,0.76)]"
+                    class="w-auto object-contain max-h-20 sm:max-h-32 md:max-h-40 lg:max-h-44 xl:max-h-48 drop-shadow-[0_0_24px_rgba(255,255,255,0.85)] filter brightness-105"
                 />
             </div>
 
             <div
-                class="w-20 sm:w-36 md:w-48 shrink-0 flex items-center justify-end transition duration-300 hover:scale-105 drop-shadow-[0_8px_14px_rgba(0,0,0,0.18)]"
+                class="w-24 sm:w-40 md:w-52 shrink-0 flex items-center justify-end transition duration-300 hover:scale-105 drop-shadow-[0_8px_14px_rgba(0,0,0,0.18)]"
             >
                 <img
                     src="/images/logo-indomaret.png"
                     alt="Indomaret"
-                    class="w-auto max-h-10 sm:max-h-16 md:max-h-20 lg:max-h-22 object-contain"
+                    class="w-auto max-h-12 sm:max-h-18 md:max-h-22 lg:max-h-24 object-contain"
                 />
             </div>
         </header>
