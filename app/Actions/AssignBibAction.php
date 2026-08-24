@@ -20,6 +20,12 @@ class AssignBibAction
 {
     public function execute(string $pinCode, string $bibNumber, User $officer, string $device): Participant
     {
+        $bibNumber = trim($bibNumber);
+
+        if ($bibNumber === '' || !ctype_digit($bibNumber)) {
+            throw new RuntimeException("Nomor BIB tidak boleh kosong dan hanya boleh berupa karakter angka (0-9).");
+        }
+
         return DB::transaction(function () use ($pinCode, $bibNumber, $officer, $device) {
             // lockForUpdate mengunci baris ini sampai transaction selesai,
             // sehingga request dari loket lain untuk PIN yang sama harus menunggu.

@@ -103,7 +103,8 @@ async function handleSearch(keywordOverride = null, typeOverride = null) {
             claimedDevice.value = data.claimed_device || '-';
 
             suggestedBib.value = data.suggested_bib || '';
-            bibNumber.value = data.participant?.bib_number || data.suggested_bib || '';
+            // Default dikosongkan agar petugas wajib scan/ketik nomor BIB fisik dan tidak auto-submit tak sengaja
+            bibNumber.value = '';
             identityConfirmed.value = true;
 
             if (!isClaimed.value) {
@@ -120,25 +121,59 @@ async function handleSearch(keywordOverride = null, typeOverride = null) {
     }
 }
 
+function onBibInput(e) {
+    // Hanya izinkan karakter angka (digit 0-9)
+    bibNumber.value = (e.target.value || '').replace(/\D/g, '');
+}
+
+function useSuggestedBib() {
+    if (suggestedBib.value) {
+        bibNumber.value = suggestedBib.value.replace(/\D/g, '');
+        nextTick(() => bibInput.value?.focus());
+    }
+}
+
 function selectParticipant(p) {
     searchKeyword.value = p.pin_code;
     handleSearch(p.pin_code, 'pin');
 }
 
 function submitAssign() {
-    if (!participant.value || isClaimed.value || !identityConfirmed.value || !bibNumber.value) return;
+    if (!participant.value || isClaimed.value) return;
+
+    const cleanBib = (bibNumber.value || '').toString().trim();
+
+    if (!cleanBib) {
+        errorMessage.value = 'Nomor BIB wajib diisi dan tidak boleh kosong.';
+        nextTick(() => bibInput.value?.focus());
+        return;
+    }
+
+    if (!/^\d+$/.test(cleanBib)) {
+        errorMessage.value = 'Nomor BIB tidak valid: hanya boleh berisi karakter angka (digit 0-9).';
+        nextTick(() => bibInput.value?.focus());
+        return;
+    }
+
+    if (!identityConfirmed.value) {
+        errorMessage.value = 'Wajib centang konfirmasi kesesuaian data identitas peserta.';
+        return;
+    }
+
+    errorMessage.value = '';
 
     router.post('/loket/assign', {
         pin_code: participant.value.pin_code,
-        bib_number: bibNumber.value,
+        bib_number: cleanBib,
         identity_confirmed: identityConfirmed.value,
     }, {
         onSuccess: () => {
-            showSuccessFlash(`BIB #${bibNumber.value} &rarr; ${participant.value?.full_name.toUpperCase()} BERHASIL DIASIGN!`);
+            showSuccessFlash(`BIB #${cleanBib} &rarr; ${participant.value?.full_name.toUpperCase()} BERHASIL DI-ASSIGN!`);
             resetForm();
         },
         onError: (errors) => {
             errorMessage.value = Object.values(errors)[0];
+            nextTick(() => bibInput.value?.focus());
         },
     });
 }
@@ -421,17 +456,31 @@ async function submitUpdateBibName() {
                             <span class="text-xs font-black uppercase text-emerald-700 tracking-wider font-heading flex items-center gap-1">
                                 <span>⚡</span> Quick Assign BIB
                             </span>
-                            <span class="text-xs text-slate-500 font-semibold">Saran: <strong class="text-emerald-700 font-bib text-sm">{{ suggestedBib }}</strong></span>
+                            <div v-if="suggestedBib" class="flex items-center gap-1.5 text-xs text-slate-500 font-semibold">
+                                <span>Saran: <strong class="text-emerald-700 font-bib text-sm">{{ suggestedBib }}</strong></span>
+                                <button
+                                    type="button"
+                                    @click="useSuggestedBib"
+                                    class="px-2 py-0.5 rounded-md bg-emerald-100 hover:bg-emerald-200 active:scale-95 text-emerald-800 text-[10px] font-extrabold uppercase transition"
+                                    title="Gunakan nomor BIB saran"
+                                >
+                                    Gunakan
+                                </button>
+                            </div>
                         </div>
 
                         <div>
                             <input
                                 ref="bibInput"
                                 v-model="bibNumber"
+                                @input="onBibInput"
                                 type="text"
+                                inputmode="numeric"
+                                pattern="[0-9]*"
                                 @keyup.enter="submitAssign"
-                                class="w-full text-2xl sm:text-3xl font-bib font-black text-center tracking-widest bg-slate-50 border-2 border-emerald-500 text-emerald-700 rounded-xl sm:rounded-2xl py-2 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-300"
-                                placeholder="Nomor BIB..."
+                                class="w-full text-2xl sm:text-3xl font-bib font-black text-center tracking-widest bg-slate-50 border-2 border-emerald-500 text-emerald-700 rounded-xl sm:rounded-2xl py-2 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-300 placeholder:text-slate-300 placeholder:font-sans placeholder:text-xs sm:placeholder:text-sm placeholder:tracking-normal"
+                                placeholder="Scan / Ketik Nomor BIB (Hanya Angka)..."
+                                autocomplete="off"
                             />
                         </div>
 
@@ -446,7 +495,7 @@ async function submitUpdateBibName() {
 
                         <button
                             @click="submitAssign"
-                            :disabled="!identityConfirmed || !bibNumber"
+                            :disabled="!identityConfirmed || !bibNumber || !/^\d+$/.test(bibNumber.trim())"
                             class="w-full py-3 sm:py-3.5 px-4 rounded-xl sm:rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 active:scale-95 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-md shadow-emerald-500/25 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 font-heading"
                         >
                             <span>✓ Konfirmasi &amp; Cetak Struk</span>
