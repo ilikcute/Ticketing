@@ -1,8 +1,9 @@
 // RacePack Pro Service Worker
-const CACHE_NAME = 'racepack-pro-v1';
+const CACHE_NAME = 'racepack-pro-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/manifest.webmanifest',
+  '/images/bg-indomaret-run.jpg',
   '/images/logo-indomaret-funrun.png',
   '/images/logo-indomaret.png',
   '/images/header-event-yogyakarta.png',

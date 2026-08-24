@@ -175,69 +175,12 @@ async function submitEditName() {
     <Head :title="`BIB Check - ${event?.name || 'Indomaret Fun Run 2026'}`" />
 
     <div
-        class="relative flex min-h-screen select-none flex-col justify-between overflow-y-auto lg:overflow-hidden p-2 sm:p-3 md:p-4 text-white font-sans"
-        :style="{
-            background:
-                'radial-gradient(circle at 18% 10%, rgba(255,255,255,.30) 0%, rgba(255,255,255,.10) 18%, transparent 40%), radial-gradient(circle at 84% 14%, rgba(255,255,255,.18) 0%, rgba(255,255,255,.08) 16%, transparent 38%), radial-gradient(circle at 50% 56%, rgba(255,255,255,.20) 0%, rgba(255,255,255,.08) 18%, transparent 42%), linear-gradient(180deg, #5bc0f2 0%, #51baf0 35%, #4bb5ef 65%, #46b0ec 100%)',
-        }"
+        class="relative flex min-h-screen select-none flex-col justify-between overflow-y-auto lg:overflow-hidden p-2 sm:p-3 md:p-4 text-white font-sans bg-cover bg-center bg-no-repeat"
+        style="background-image: url('/images/bg-indomaret-run.jpg');"
         @click="focusInput"
     >
-        <!-- Background layers -->
-        <svg
-            class="pointer-events-none absolute inset-0 z-0 h-full w-full opacity-60 sm:opacity-100"
-            viewBox="0 0 1600 900"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-        >
-            <defs>
-                <filter
-                    id="softGlow"
-                    x="-20%"
-                    y="-20%"
-                    width="140%"
-                    height="140%"
-                >
-                    <feGaussianBlur stdDeviation="8" result="blur" />
-                    <feMerge>
-                        <feMergeNode in="blur" />
-                        <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                </filter>
-            </defs>
-
-            <path
-                d="M 0 110 C 180 40, 310 190, 430 120 S 700 60, 840 130 S 1120 180, 1320 115 S 1490 70, 1600 140"
-                fill="none"
-                stroke="rgba(255,255,255,0.35)"
-                stroke-width="2"
-                filter="url(#softGlow)"
-            />
-            <path
-                d="M 0 205 C 180 135, 320 270, 470 205 S 780 135, 940 210 S 1235 265, 1415 195 S 1540 150, 1600 220"
-                fill="none"
-                stroke="rgba(255,255,255,0.28)"
-                stroke-width="1.5"
-                filter="url(#softGlow)"
-            />
-            <path
-                d="M 0 700 C 200 620, 320 760, 520 690 S 860 610, 1060 700 S 1360 760, 1600 670"
-                fill="none"
-                stroke="rgba(255,255,255,0.26)"
-                stroke-width="1.7"
-                filter="url(#softGlow)"
-            />
-        </svg>
-
-        <div
-            class="pointer-events-none absolute inset-0 z-0 opacity-[0.09]"
-            style="
-                background-image: radial-gradient(
-                    #ffffff 1.2px,
-                    transparent 1.2px
-                );
-                background-size: 24px 24px;
-            "
-        ></div>
+        <!-- Subtle Ambient Overlay -->
+        <div class="pointer-events-none absolute inset-0 z-0 bg-blue-950/10"></div>
 
         <!-- Staff controls -->
         <div
